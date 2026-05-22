@@ -5,9 +5,7 @@ const Footer = () => {
   return (
     <footer className="site-footer bg-[#172337] text-white text-[12px] pt-10 pb-6 mt-12 border-t border-[#303f56]">
       <div className="container mx-auto px-4 max-w-[1248px]">
-        {/* Footer Top Links */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 pb-10 border-b border-[#303f56]">
-          {/* Col 1 */}
           <div>
             <h5 className="text-[#878787] font-semibold mb-3 uppercase tracking-wider">About</h5>
             <ul className="space-y-2 font-medium">
@@ -20,7 +18,6 @@ const Footer = () => {
             </ul>
           </div>
           
-          {/* Col 2 */}
           <div>
             <h5 className="text-[#878787] font-semibold mb-3 uppercase tracking-wider">Help</h5>
             <ul className="space-y-2 font-medium">
@@ -32,7 +29,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Col 3 */}
           <div>
             <h5 className="text-[#878787] font-semibold mb-3 uppercase tracking-wider">Consumer Policy</h5>
             <ul className="space-y-2 font-medium">
@@ -45,7 +41,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Col 4 */}
           <div>
             <h5 className="text-[#878787] font-semibold mb-3 uppercase tracking-wider">Social</h5>
             <ul className="space-y-2 font-medium">
@@ -55,7 +50,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Col 5 (Split border for Mail/Office in Flipkart) */}
           <div className="border-l border-[#303f56] pl-6 col-span-2 md:col-span-1">
             <h5 className="text-[#878787] font-semibold mb-3 uppercase tracking-wider">Mail Us:</h5>
             <p className="text-[#f0f0f0] leading-5 font-normal">
@@ -68,7 +62,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Col 6 */}
           <div className="pl-2 col-span-2 md:col-span-1">
             <h5 className="text-[#878787] font-semibold mb-3 uppercase tracking-wider">Registered Office:</h5>
             <p className="text-[#f0f0f0] leading-5 font-normal">
@@ -83,7 +76,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Footer Bottom Strip */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-6 text-[11px] font-medium text-[#f0f0f0]">
           <div className="flex flex-wrap gap-6">
             <span className="flex items-center gap-1.5 cursor-pointer hover:text-white transition">

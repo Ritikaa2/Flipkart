@@ -4,12 +4,10 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 
-// Components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 
-// Pages
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
@@ -28,23 +26,16 @@ function App() {
       <AuthProvider>
         <WishlistProvider>
           <CartProvider>
-            
-            {/* App Main Layout Structure */}
             <div className="app-shell flex flex-col min-h-screen bg-flipkart-bg">
-              
-              {/* Sticky Navbar */}
               <Navbar />
 
-              {/* Main Content Area */}
               <main className="app-main flex-grow pb-8">
                 <Routes>
-                  {/* Public routes */}
                   <Route path="/" element={<Home />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/auth" element={<AuthPage />} />
 
-                  {/* Protected/Private routes */}
                   <Route
                     path="/checkout"
                     element={
@@ -88,11 +79,8 @@ function App() {
                 </Routes>
               </main>
 
-              {/* Classic Footer */}
               <Footer />
-
             </div>
-
           </CartProvider>
         </WishlistProvider>
       </AuthProvider>

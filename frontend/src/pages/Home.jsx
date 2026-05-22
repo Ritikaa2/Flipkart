@@ -1,472 +1,310 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import ProductCard from '../components/ProductCard';
-import { useWishlist } from '../context/WishlistContext';
-import { ArrowLeft, ArrowRight, BadgePercent, Clock, Headphones, Heart, ShieldCheck, Sparkles, Star, Truck, X, Zap } from 'lucide-react';
+
+const fallbackProducts = [
+  ['KOTTY Women Regular Fit Black Trousers', 297, 1999, 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=500&auto=format&fit=crop'],
+  ['Ankit fashion Women Straight Pants', 350, 1999, 'https://images.unsplash.com/photo-1509551388413-e18d0ac5d495?q=80&w=500&auto=format&fit=crop'],
+  ['KOTTY Women Regular Fit Beige Trousers', 362, 1999, 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?q=80&w=500&auto=format&fit=crop'],
+  ['NEYS A Women Regular Fit Black Pants', 362, 999, 'https://images.unsplash.com/photo-1506629905607-d405b7a30db9?q=80&w=500&auto=format&fit=crop'],
+  ['OPPO A6x 4G Mobile', 11589, 12999, 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=500&auto=format&fit=crop'],
+  ['Vivo T5x 5G Cyber Green', 20499, 22999, 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?q=80&w=500&auto=format&fit=crop'],
+  ['Roadster Men Printed T-shirt', 575, 1999, 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=500&auto=format&fit=crop'],
+  ['Women Embroidered Shirt', 330, 1499, 'https://images.unsplash.com/photo-1608234808654-2a8875faa7fd?q=80&w=500&auto=format&fit=crop'],
+  ['Apple iPad 128 GB ROM', 34890, 49900, 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=500&auto=format&fit=crop'],
+  ['Mens Cargo Style Pants', 686, 1990, 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=500&auto=format&fit=crop'],
+  ['Women Regular Fit Striped Shirt', 338, 449, 'https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?q=80&w=500&auto=format&fit=crop'],
+  ['Mini Jungle Animals Toy Set', 118, 999, 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=500&auto=format&fit=crop'],
+  ['Foldable Storage Rack', 299, 999, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=500&auto=format&fit=crop'],
+  ['Shop Now Black Dress', 699, 1999, 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?q=80&w=500&auto=format&fit=crop'],
+  ['Realme Buds Wireless', 599, 1999, 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=500&auto=format&fit=crop'],
+  ['Vegetable Chopper', 785, 1499, 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?q=80&w=500&auto=format&fit=crop'],
+  ['Wooden Alphabet Toy', 262, 999, 'https://images.unsplash.com/photo-1604881991720-f91add269bed?q=80&w=500&auto=format&fit=crop'],
+  ['Hand Fan Rechargeable', 188, 799, 'https://images.unsplash.com/photo-1620297949358-4d130a96b721?q=80&w=500&auto=format&fit=crop'],
+  ['Trendy Sling Bag', 298, 999, 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=500&auto=format&fit=crop'],
+  ['Racket Set for Kids', 308, 999, 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=500&auto=format&fit=crop']
+].map(([name, price, mrp, image_url], index) => ({
+  id: `fallback-${index}`,
+  name,
+  price,
+  mrp,
+  image_url,
+  rating: index % 3 === 0 ? 4.1 : index % 3 === 1 ? 4.3 : 4.5,
+  rating_count: 31 + index * 19
+}));
+
+const heroCards = [
+  { image: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?q=80&w=900&auto=format&fit=crop', title: 'edge 70 fusion', text: 'From Rs. 24,999*' },
+  { image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=900&auto=format&fit=crop', title: 'Nova 2 5G', text: 'From Rs. 10,999*' },
+  { image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=900&auto=format&fit=crop', title: 'Introducing Vibe 2', text: 'From Rs. 9,499*' },
+  { image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=900&auto=format&fit=crop', title: 'Limited time deals', text: 'Soundbars from Rs. 3,799' },
+  { image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=900&auto=format&fit=crop', title: 'Simple to ride', text: 'Up to 70% Off' },
+  { image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?q=80&w=900&auto=format&fit=crop', title: 'Chill faster', text: 'From Rs. 28,990*' }
+];
+
+const shortcutItems = [
+  ['Grocery', 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=180&auto=format&fit=crop'],
+  ['For GenZ', 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=180&auto=format&fit=crop'],
+  ['Flipkart', 'https://images.unsplash.com/photo-1607082349566-187342175e2f?q=80&w=180&auto=format&fit=crop'],
+  ['Originals', 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=180&auto=format&fit=crop'],
+  ['Gift Cards', 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?q=80&w=180&auto=format&fit=crop'],
+  ['Sell Phone', 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=180&auto=format&fit=crop'],
+  ['BLACK', 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=180&auto=format&fit=crop'],
+  ['Super C...', 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=180&auto=format&fit=crop'],
+  ['Next-Gen', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=180&auto=format&fit=crop']
+];
+
+const brandCards = [
+  ['Sturdy & stylish', 'Min. 75% Off', 'https://images.unsplash.com/photo-1581553680321-4fffae59fccd?q=80&w=400&auto=format&fit=crop'],
+  ['1.39" display', 'Min. 70% Off', 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop'],
+  ['Built for speed', 'Min. 55% Off', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=400&auto=format&fit=crop'],
+  ["Today's special deal", 'Up to 80% Off', 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=400&auto=format&fit=crop'],
+  ['Track your fitness', 'Up to 90% Off', 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?q=80&w=400&auto=format&fit=crop'],
+  ['Biggest price drop', 'Up to 90% Off', 'https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?q=80&w=400&auto=format&fit=crop']
+].map(([title, offer, image]) => ({ title, offer, image }));
+
+const categoryPages = {
+  Mobiles: {
+    hero: [
+      ['vivo T5x 5G', 'From Rs. 20,999*', 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?q=80&w=900&auto=format&fit=crop'],
+      ['edge 70 fusion', 'From Rs. 24,999*', 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?q=80&w=900&auto=format&fit=crop'],
+      ['Ai+ Nova 2 5G', 'From Rs. 10,999*', 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['iPhone', 'vivo', 'realme', 'POCO', 'Alt+', 'Google', 'Tecno', 'HMD', 'motorola', 'Samsung', 'OPPO', 'Nothing'],
+    products: [
+      ['OPPO A6x 4G', 11589, 12999, 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=500&auto=format&fit=crop'],
+      ['G Five A99 Mini Keypad', 845, 999, 'https://images.unsplash.com/photo-1601972599720-36938d4ecd31?q=80&w=500&auto=format&fit=crop'],
+      ['vivo T5x 5G', 20499, 22999, 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?q=80&w=500&auto=format&fit=crop'],
+      ['realme C67 5G', 16190, 16999, 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500&auto=format&fit=crop']
+    ]
+  },
+  Beauty: {
+    hero: [
+      ['Afnan perfumes', 'Up to 45% Off', 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=900&auto=format&fit=crop'],
+      ['Hira perfumes', 'Up to 60% Off', 'https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=900&auto=format&fit=crop'],
+      ['Sale is live', 'From Rs. 22', 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Skincare', 'Afnan', 'Hair care', 'Top 25 deals', 'Makeup', 'Grooming', 'Fragrances', 'Premium', 'Personal care', 'Derma'],
+    products: [
+      ['Olay Serum', 799, 1599, 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=500&auto=format&fit=crop'],
+      ['Dot & Key Sunscreen', 349, 599, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?q=80&w=500&auto=format&fit=crop'],
+      ['Maybelline Foundation', 499, 799, 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=500&auto=format&fit=crop'],
+      ['Ponds Hydra Cream', 299, 499, 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?q=80&w=500&auto=format&fit=crop']
+    ]
+  },
+  Home: {
+    hero: [
+      ['Maha Home Sale', 'Home & Furniture', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=900&auto=format&fit=crop'],
+      ['GST benefits', 'Maximise your savings', 'https://images.unsplash.com/photo-1556020685-ae41abfc9365?q=80&w=900&auto=format&fit=crop'],
+      ['Brand paglus', 'Up to 70% Off', 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Cookware', 'Lighting', 'Containers', 'Drinkware', 'Bathroom', 'Mattress', 'Wallpaper', 'Furnishing', 'Hardware', 'Covers', 'Decor', 'Bedsheets'],
+    products: [
+      ['Cookware Set', 799, 1999, 'https://images.unsplash.com/photo-1556911220-bff31c812dba?q=80&w=500&auto=format&fit=crop'],
+      ['Designer Lamp', 499, 1499, 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?q=80&w=500&auto=format&fit=crop'],
+      ['Storage Containers', 299, 999, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=500&auto=format&fit=crop'],
+      ['Sofa Furnishing', 1299, 3999, 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=500&auto=format&fit=crop']
+    ]
+  },
+  Fashion: {
+    hero: [
+      ['Back to Campus', 'Min. 60% Off', 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=900&auto=format&fit=crop'],
+      ['Denim Fest', 'Every budget', 'https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=900&auto=format&fit=crop'],
+      ['Spring picks', 'Fresh styles', 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['College Ready', 'Tshirts', 'Jeans', 'Kurta Sets', 'Formal Wear', 'Sunglasses', 'Backpacks', 'Kids clothing', 'Sneakers', 'Watches'],
+    products: fallbackProducts.slice(0, 12).map((item) => [item.name, item.price, item.mrp, item.image_url])
+  }
+};
 
 const Home = () => {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Hero Carousel Slide state
-  const [currentSlide, setCurrentSlide] = useState(0);
-
+  const [heroIndex, setHeroIndex] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
-  // Parse URL search/category parameters
   const params = new URLSearchParams(location.search);
   const selectedCategory = params.get('category') || '';
   const searchQuery = params.get('search') || '';
+  const pageConfig = categoryPages[selectedCategory] || categoryPages.Fashion;
+  const categoryHeroCards = pageConfig.hero.map(([title, text, image]) => ({ title, text, image }));
+  const heroPool = selectedCategory ? categoryHeroCards : heroCards;
 
-  const handleWishlistToggle = async (e, productId) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (isInWishlist(productId)) {
-      await removeFromWishlist(productId);
-    } else {
-      const result = await addToWishlist(productId);
-      if (!result.success) {
-        navigate(`/auth?redirect=${encodeURIComponent(location.pathname + location.search)}`);
-      }
-    }
-  };
-
-  // Carousel banners
-  const banners = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=1200&auto=format&fit=crop",
-      title: "Super Saver Days",
-      subtitle: "Fresh deals on phones, laptops, audio and everyday essentials"
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop",
-      title: "Big Electronics Festival",
-      subtitle: "Flagship tech, clean accessories and gaming gear at better prices"
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&auto=format&fit=crop",
-      title: "Wardrobe Refresh",
-      subtitle: "New-season fashion, sneakers and travel picks curated for you"
-    }
-  ];
-
-  const benefits = [
-    { icon: Truck, title: 'Fast Delivery', text: 'Priority shipping on bestsellers' },
-    { icon: ShieldCheck, title: 'Secure Checkout', text: 'Protected orders and easy returns' },
-    { icon: BadgePercent, title: 'Daily Deals', text: 'Fresh offers across categories' },
-    { icon: Headphones, title: 'Support', text: 'Help whenever your order needs it' }
-  ];
-
-  const editorialTiles = [
-    {
-      eyebrow: 'Top Pick',
-      title: 'Premium electronics under one roof',
-      text: 'Laptops, phones, speakers and accessories selected for work and play.',
-      category: 'Electronics'
-    },
-    {
-      eyebrow: 'Fresh Drop',
-      title: 'Style upgrades for every day',
-      text: 'Comfort-first fashion with sharp prices and easy wishlist saves.',
-      category: 'Fashion'
-    },
-    {
-      eyebrow: 'Home Edit',
-      title: 'Useful finds for modern homes',
-      text: 'Smart storage, decor and appliances that make routines smoother.',
-      category: 'Furniture'
-    }
-  ];
-
-  // Auto scroll slides
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % banners.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Fetch Categories on mount
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await api.get('/products/categories/list');
-        setCategories(res.data.categories || []);
-      } catch (err) {
-        console.error("Categories fetch failed:", err);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  // Fetch Products based on filter queries
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        let endpoint = '/products';
-        const queryParams = [];
-        
-        if (selectedCategory) {
-          queryParams.push(`category=${encodeURIComponent(selectedCategory)}`);
-        }
-        if (searchQuery) {
-          queryParams.push(`search=${encodeURIComponent(searchQuery)}`);
-        }
-
-        if (queryParams.length > 0) {
-          endpoint += `?${queryParams.join('&')}`;
-        }
-
-        const res = await api.get(endpoint);
-        setProducts(res.data.products || []);
-      } catch (err) {
-        console.error("Products fetch failed:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProducts();
+    const query = [];
+    if (selectedCategory) query.push(`category=${encodeURIComponent(selectedCategory)}`);
+    if (searchQuery) query.push(`search=${encodeURIComponent(searchQuery)}`);
+    setIsLoading(true);
+    api.get(`/products${query.length ? `?${query.join('&')}` : ''}`)
+      .then((res) => setProducts(res.data.products || []))
+      .catch((err) => console.error('Products fetch failed:', err))
+      .finally(() => setIsLoading(false));
   }, [selectedCategory, searchQuery]);
 
-  const handleCategoryClick = (catName) => {
-    // If clicked category is already active, clear it. Else, filter by it.
-    if (selectedCategory.toLowerCase() === catName.toLowerCase()) {
-      navigate('/');
-    } else {
-      navigate(`/?category=${encodeURIComponent(catName)}`);
-    }
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex((current) => (current + 1) % heroPool.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [heroPool.length]);
+
+  const productFeed = useMemo(() => {
+    const real = products.map((item) => ({ ...item, id: Number(item.id) }));
+    const categoryFallbacks = pageConfig.products.map(([name, price, mrp, image_url], index) => ({
+      id: `${selectedCategory || 'for-you'}-${index}`,
+      name,
+      price,
+      mrp,
+      image_url,
+      rating: index % 2 ? 4.3 : 4.1,
+      rating_count: 31 + index * 17
+    }));
+    const mixed = [...real, ...categoryFallbacks, ...fallbackProducts];
+    return Array.from({ length: 36 }, (_, index) => mixed[index % mixed.length]);
+  }, [products, pageConfig, selectedCategory]);
+
+  const openProduct = (id) => {
+    if (Number.isInteger(id)) navigate(`/product/${id}`);
   };
 
-  const handleClearFilters = () => {
-    navigate('/');
-  };
+  const ProductTile = ({ item, tall = false }) => (
+    <button className={`fk-feed-card ${tall ? 'is-tall' : ''}`} onClick={() => openProduct(item.id)}>
+      <div className="fk-feed-img">
+        <img src={item.image_url} alt={item.name} />
+        <span>{item.rating || 4.2} * <small>({item.rating_count || 31})</small></span>
+      </div>
+      <b>{item.name}</b>
+      <p><del>Rs. {(item.mrp || 999).toLocaleString()}</del> Rs. {(item.price || 299).toLocaleString()}</p>
+      <strong>Rs. {Math.max(Math.round((item.price || 299) * 0.95), 99).toLocaleString()} with Bank offer</strong>
+    </button>
+  );
 
-  const nextSlide = () => setCurrentSlide(prev => (prev + 1) % banners.length);
-  const prevSlide = () => setCurrentSlide(prev => (prev - 1 + banners.length) % banners.length);
-  const activeBanner = banners[currentSlide];
-  const isListingMode = Boolean(selectedCategory || searchQuery);
-  const listingTitle = searchQuery || selectedCategory || 'products';
-  const visibleBrands = Array.from(new Set(products.map(item => item.brand).filter(Boolean))).slice(0, 7);
-
-  const getHighlights = (item) => {
-    let specs = item.specifications || {};
-    if (typeof specs === 'string') {
-      try {
-        specs = JSON.parse(specs);
-      } catch {
-        specs = {};
-      }
-    }
-    const entries = Object.entries(specs).slice(0, 5).map(([key, value]) => `${value} ${key}`);
-    return entries.length > 0
-      ? entries
-      : [
-          'Fast delivery with secure packaging',
-          'Bank offers and exchange benefits available',
-          'Quality checked by verified sellers'
-        ];
-  };
+  const visibleHeroCards = [0, 1, 2].map((offset) => heroPool[(heroIndex + offset) % heroPool.length]);
 
   return (
-    <div className="home-page container mx-auto px-4 max-w-[1248px] py-4 select-none">
-      
-      {/* 2. Banner Slider (Carousel) */}
-      {!selectedCategory && !searchQuery && (
-        <div className="hero-carousel home-hero-pro relative h-[180px] md:h-[280px] w-full bg-slate-200 rounded-[4px] shadow-flip overflow-hidden mb-6 group select-none">
-          <div
-            className="home-hero-slide"
-            style={{
-              backgroundImage: `url(${activeBanner.image})`
-            }}
-          >
-            <div className="text-white max-w-[50%] flex flex-col gap-2">
-              <span className="hero-kicker">Curated for today</span>
-              <h3 className="text-[20px] md:text-[32px] font-extrabold tracking-tight leading-tight">{activeBanner.title}</h3>
-              <p className="text-[12px] md:text-[16px] text-gray-200 font-semibold">{activeBanner.subtitle}</p>
-              <button
-                onClick={() => navigate('/?category=Electronics')}
-                className="bg-flipkart-yellow text-flipkart-dark font-bold text-[11px] md:text-[13px] px-4 py-2 mt-2 w-max rounded-[2px] hover:shadow-md transition uppercase"
-              >
-                Shop Now
-              </button>
-            </div>
-          </div>
-
-          {/* Left Arrow */}
+    <div className="fk-home">
+      <section className="fk-auto-hero">
+        {visibleHeroCards.map((card, index) => (
           <button
-            onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/70 hover:bg-white text-flipkart-dark p-2 rounded-full shadow-md md:opacity-0 group-hover:opacity-100 transition-opacity"
+            key={`${card.title}-${index}`}
+            className={`fk-auto-hero-card hero-card-${index + 1}`}
+            onClick={() => navigate(index === 0 ? '/?category=Mobiles' : '/?category=Electronics')}
           >
-            <ArrowLeft size={18} />
+            <img src={card.image} alt={card.title} />
+            <span>Back to Campus</span>
+            <h2>{card.title}</h2>
+            <p>{card.text}</p>
+            <small>AD</small>
           </button>
-          
-          {/* Right Arrow */}
+        ))}
+      </section>
+      <div className="fk-auto-dots">
+        {heroCards.map((card, index) => (
           <button
-            onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/70 hover:bg-white text-flipkart-dark p-2 rounded-full shadow-md md:opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <ArrowRight size={18} />
-          </button>
-
-          {/* Slider Dots */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-            {banners.map((_, idx) => (
-              <span
-                key={idx}
-                onClick={() => setCurrentSlide(idx)}
-                className={`h-2 w-2 rounded-full cursor-pointer transition ${
-                  idx === currentSlide ? 'bg-white scale-125' : 'bg-white/55'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {!selectedCategory && !searchQuery && (
-        <>
-          <div className="benefit-strip grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            {benefits.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="benefit-card">
-                <span><Icon size={20} /></span>
-                <div>
-                  <strong>{title}</strong>
-                  <p>{text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="editorial-grid grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-            {editorialTiles.map((tile, index) => (
-              <button
-                key={tile.title}
-                onClick={() => navigate(`/?category=${encodeURIComponent(tile.category)}`)}
-                className={`editorial-tile editorial-tile-${index + 1}`}
-              >
-                <span>{tile.eyebrow}</span>
-                <h3>{tile.title}</h3>
-                <p>{tile.text}</p>
-                <small>Explore {tile.category}</small>
-              </button>
-            ))}
-          </div>
-
-          {products.length > 0 && (
-            <div className="spotlight-section mb-6">
-              <div className="spotlight-copy">
-                <span><Sparkles size={16} /> Handpicked Deals</span>
-                <h2>Beautiful picks people are shopping now</h2>
-                <p>Quickly jump into high-value items from the live catalog, selected from your current store data.</p>
-              </div>
-              <div className="spotlight-products">
-                {products.slice(0, 3).map((item) => (
-                  <button key={item.id} onClick={() => navigate(`/product/${item.id}`)} className="spotlight-product">
-                    <img src={item.image_url || 'https://via.placeholder.com/120'} alt={item.name} />
-                    <span>{item.name}</span>
-                    <strong>₹{(item.price || 0).toLocaleString()}</strong>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* 3. Product Section Container */}
-      {isListingMode ? (
-        <div className="listing-shell">
-          <aside className="listing-filters">
-            <h3>Filters</h3>
-            <div className="filter-block">
-              <strong>Categories</strong>
-              <button onClick={() => navigate('/')}>For You</button>
-              {categories.slice(0, 6).map((cat) => (
-                <button
-                  key={cat.id || cat.name}
-                  onClick={() => handleCategoryClick(cat.name)}
-                  className={selectedCategory === cat.name ? 'active' : ''}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-            <div className="filter-block">
-              <strong>Brand</strong>
-              {(visibleBrands.length ? visibleBrands : ['Apple', 'Samsung', 'realme', 'MOTOROLA', 'vivo', 'OPPO']).map((brand) => (
-                <label key={brand}>
-                  <input type="checkbox" readOnly /> {brand}
-                </label>
-              ))}
-            </div>
-            <div className="filter-block">
-              <strong>Customer Ratings</strong>
-              <label><input type="checkbox" readOnly /> 4★ & above</label>
-              <label><input type="checkbox" readOnly /> 3★ & above</label>
-            </div>
-            <div className="filter-block">
-              <strong>Offers</strong>
-              <label><input type="checkbox" readOnly /> Bank Offer</label>
-              <label><input type="checkbox" readOnly /> No Cost EMI</label>
-              <label><input type="checkbox" readOnly /> Special Price</label>
-            </div>
-          </aside>
-
-          <section className="search-results-panel">
-            <div className="search-breadcrumb">Home › {selectedCategory || 'Search'} › {listingTitle}</div>
-            <div className="search-results-head">
-              <h2>Showing 1 - {Math.max(products.length, 1)} of {Math.max(products.length * 325, products.length)} results for "{listingTitle}"</h2>
-              <button onClick={handleClearFilters}>Clear Filter <X size={14} /></button>
-            </div>
-            <div className="sort-row">
-              <strong>Sort By</strong>
-              <span className="active">Relevance</span>
-              <span>Popularity</span>
-              <span>Price -- Low to High</span>
-              <span>Price -- High to Low</span>
-              <span>Newest First</span>
-            </div>
-
-            {isLoading ? (
-              <div className="listing-loading">
-                {[1, 2, 3].map((n) => <div key={n} />)}
-              </div>
-            ) : products.length > 0 ? (
-              <div className="search-product-list">
-                {products.map((item, index) => {
-                  const discount = item.mrp > item.price ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
-                  return (
-                    <article key={item.id} className="search-product-row" onClick={() => navigate(`/product/${item.id}`)}>
-                      <div className="search-product-image">
-                        <img src={item.image_url || 'https://via.placeholder.com/220'} alt={item.name} />
-                        <label onClick={(e) => e.stopPropagation()}><input type="checkbox" readOnly /> Add to Compare</label>
-                      </div>
-                      <button
-                        className={`wishlist-toggle-button row-wishlist ${isInWishlist(item.id) ? 'is-active' : ''}`}
-                        onClick={(e) => handleWishlistToggle(e, item.id)}
-                        aria-label={isInWishlist(item.id) ? 'Remove from wishlist' : 'Add to wishlist'}
-                        title={isInWishlist(item.id) ? 'Remove from wishlist' : 'Add to wishlist'}
-                      >
-                        <Heart size={18} className={isInWishlist(item.id) ? 'fill-current' : ''} />
-                      </button>
-                      <div className="search-product-copy">
-                        <span className="sponsored-label">{index % 3 === 0 ? 'Sponsored' : 'Flipkart assured'}</span>
-                        <h3>{item.name}</h3>
-                        <div className="row-rating">
-                          <span>{item.rating || '4.2'} <Star size={11} className="fill-white" /></span>
-                          <strong>{(item.rating_count || 48).toLocaleString()} Ratings & {(item.review_count || 12).toLocaleString()} Reviews</strong>
-                        </div>
-                        <ul>
-                          {getHighlights(item).map((line) => <li key={line}>{line}</li>)}
-                        </ul>
-                      </div>
-                      <div className="search-price-box">
-                        <strong>₹{(item.price || 0).toLocaleString()}</strong>
-                        {item.mrp > item.price && <span>₹{item.mrp.toLocaleString()} <em>{discount}% off</em></span>}
-                        <small>Only few left</small>
-                        <p>Bank Offer</p>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="listing-empty">
-                <X size={48} />
-                <h3>Sorry, no products found!</h3>
-                <p>Check the spelling or try a different product, brand or category.</p>
-                <button onClick={handleClearFilters}>View All Products</button>
-              </div>
-            )}
-          </section>
-        </div>
-      ) : (
-      <div className="product-section bg-white p-6 rounded-[4px] shadow-flip min-h-[50vh]">
-        {/* Row Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-6">
-          <div>
-            <h2 className="text-[20px] font-bold text-flipkart-dark tracking-tight">
-              {searchQuery
-                ? `Search results for "${searchQuery}"`
-                : selectedCategory
-                ? `Best of ${selectedCategory}`
-                : 'Deals of the Day'}
-            </h2>
-            <p className="text-[12px] text-flipkart-textGray mt-0.5 font-semibold">
-              {!isLoading ? `${products.length} curated items found` : 'Preparing your storefront...'}
-            </p>
-          </div>
-
-          {!selectedCategory && !searchQuery && (
-            <div className="deal-timer">
-              <Clock size={15} />
-              <span>Live deals refresh daily</span>
-              <Zap size={15} />
-            </div>
-          )}
-
-          {/* Active Filter Indicators */}
-          {(selectedCategory || searchQuery) && (
-            <button
-              onClick={handleClearFilters}
-              className="border border-red-500 text-red-500 hover:bg-red-50 px-4 py-1.5 rounded-[2px] text-[13px] font-bold flex items-center gap-1.5 transition"
-            >
-              Clear Filter <X size={14} />
-            </button>
-          )}
-        </div>
-
-        {/* 4. Product Listings Grid */}
-        {isLoading ? (
-          /* Loading Skeleton Cards */
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="border border-gray-100 rounded-[4px] p-4 flex flex-col gap-4 animate-pulse">
-                <div className="h-[200px] bg-slate-100 w-full rounded" />
-                <div className="h-4 bg-slate-100 w-3/4 rounded" />
-                <div className="h-4 bg-slate-100 w-1/2 rounded" />
-                <div className="h-8 bg-slate-100 w-full rounded mt-auto" />
-              </div>
-            ))}
-          </div>
-        ) : products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
-            {products.map((item) => (
-              <ProductCard key={item.id} product={item} />
-            ))}
-          </div>
-        ) : (
-          /* Empty Search results display */
-          <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-in select-none">
-            <div className="h-[140px] w-[140px] rounded-full bg-slate-50 flex items-center justify-center text-flipkart-blue mb-4 shadow-sm border border-slate-100">
-              <X size={52} className="stroke-[1.5]" />
-            </div>
-            <h3 className="text-[18px] font-extrabold text-flipkart-dark">Sorry, no products found!</h3>
-            <p className="text-[13px] text-flipkart-textGray mt-1 max-w-[340px] font-semibold">
-              Check the spelling, clear active tags, or type a different product/brand name.
-            </p>
-            <button
-              onClick={handleClearFilters}
-              className="bg-flipkart-blue text-white px-6 py-2.5 mt-5 font-bold rounded-[2px] hover:shadow-md transition text-[13px]"
-            >
-              View All Products
-            </button>
-          </div>
-        )}
+            key={card.title}
+            className={index === heroIndex ? 'active' : ''}
+            onClick={() => setHeroIndex(index)}
+            aria-label={`Show banner ${index + 1}`}
+          />
+        ))}
       </div>
+
+      <section className="fk-category-tiles-row">
+        {pageConfig.shortcuts.map((label, index) => (
+          <button key={label}>
+            <img src={productFeed[index]?.image_url || fallbackProducts[index % fallbackProducts.length].image_url} alt={label} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </section>
+
+      {selectedCategory === 'Mobiles' && (
+        <section className="fk-bank-offer-strip">
+          <b>HDFC BANK</b>
+          <span>Up to 10% Instant Discount*</span>
+        </section>
       )}
 
+      <section className="fk-shortcuts">
+        {shortcutItems.map(([label, image]) => (
+          <button key={label}>
+            <img src={image} alt={label} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </section>
+
+      <section className="fk-grab">
+        <h2>Grab or gone</h2>
+        <div>
+          {productFeed.slice(12, 16).map((item, index) => (
+            <button key={`grab-${index}-${item.id}`} onClick={() => openProduct(item.id)}>
+              <img src={item.image_url} alt={item.name} />
+              <span>{index === 1 ? 'Shop Now!' : item.name}</span>
+              <b>{index === 2 ? 'Min 50% Off' : `From Rs. ${item.price}`}</b>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="fk-feed-grid">
+        {productFeed.slice(16, 28).map((item, index) => (
+          <ProductTile key={`mid-${index}-${item.id}`} item={item} tall={index % 3 !== 0} />
+        ))}
+      </section>
+
+      <section className="fk-exact-section">
+        <img src="/flipkart-home/everybody-list.png" alt="On everybody's list" />
+      </section>
+
+      <section className="fk-exact-section fk-grwm-banner">
+        <img src="/flipkart-home/grwm-banner.png" alt="GRWM sale extra discounts" />
+      </section>
+
+      <RowSection title="Suggested For You" items={productFeed.slice(4, 12)} openProduct={openProduct} />
+
+      <section className="fk-brands-real">
+        <h2>Brands in Spotlight</h2>
+        <div>
+          {brandCards.map((card) => (
+            <button key={card.title}>
+              <img src={card.image} alt={card.title} />
+              <strong>{card.offer}</strong>
+              <span>{card.title}</span>
+              <small>AD</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <RowSection title="Suggested For You" items={productFeed.slice(20, 30)} openProduct={openProduct} />
+
+      {isLoading && (
+        <div className="fk-feed-loading">Loading more deals...</div>
+      )}
     </div>
   );
 };
+
+const RowSection = ({ title, items, openProduct }) => (
+  <section className="fk-suggested-real">
+    <div className="fk-real-head">
+      <h2>{title}</h2>
+      <button>→</button>
+    </div>
+    <div className="fk-real-strip">
+      {items.map((item, index) => (
+        <button key={`${title}-${index}-${item.id}`} onClick={() => Number.isInteger(item.id) && openProduct(item.id)}>
+          <img src={item.image_url} alt={item.name} />
+          <span>{item.rating || 4.1} *</span>
+          <b>{item.name}</b>
+          <p><del>Rs. {(item.mrp || 999).toLocaleString()}</del> Rs. {(item.price || 299).toLocaleString()}</p>
+          <strong>Rs. {Math.max(Math.round((item.price || 299) * 0.95), 99).toLocaleString()} with Bank offer</strong>
+        </button>
+      ))}
+    </div>
+  </section>
+);
 
 export default Home;

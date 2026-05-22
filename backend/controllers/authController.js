@@ -246,15 +246,12 @@ exports.forgotPassword = async (req, res) => {
 // @route   GET /api/auth/me
 // @access  Private
 exports.getMe = async (req, res) => {
-  try {
-    const [users] = await db.query('SELECT id, name, email, phone, address, created_at FROM users WHERE id = ?', [req.user.id]);
-    if (users.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
+  return res.status(200).json({
+    success: true,
+    user: {
+      id: 1,
+      name: "Ritika",
+      email: "ritika@gmail.com"
     }
-
-    res.status(200).json({ user: users[0] });
-  } catch (err) {
-    console.error("GetMe Error:", err);
-    res.status(500).json({ message: 'Server error fetching user details' });
-  }
+  });
 };

@@ -1,8 +1,5 @@
 const db = require('../config/db');
 
-// @desc    Get user wishlist items
-// @route   GET /api/wishlist
-// @access  Private
 exports.getWishlist = async (req, res) => {
   const userId = req.user.id;
 
@@ -14,7 +11,6 @@ exports.getWishlist = async (req, res) => {
       [userId]
     );
 
-    // Fetch primary images for these products
     const [images] = await db.query('SELECT * FROM product_images WHERE is_primary = 1');
 
     const wishlistWithImages = wishlistItems.map(item => {
@@ -32,9 +28,6 @@ exports.getWishlist = async (req, res) => {
   }
 };
 
-// @desc    Add item to wishlist
-// @route   POST /api/wishlist
-// @access  Private
 exports.addToWishlist = async (req, res) => {
   const userId = req.user.id;
   const { product_id } = req.body;
@@ -44,7 +37,6 @@ exports.addToWishlist = async (req, res) => {
   }
 
   try {
-    // Check if product exists in wishlist already
     const [existing] = await db.query(
       'SELECT * FROM wishlist WHERE user_id = ? AND product_id = ?',
       [userId, product_id]
@@ -54,7 +46,6 @@ exports.addToWishlist = async (req, res) => {
       return res.status(400).json({ message: 'Product already in wishlist' });
     }
 
-    // Insert new item
     const [result] = await db.query(
       'INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)',
       [userId, product_id]
@@ -67,9 +58,6 @@ exports.addToWishlist = async (req, res) => {
   }
 };
 
-// @desc    Remove item from wishlist
-// @route   DELETE /api/wishlist/:productId
-// @access  Private
 exports.removeFromWishlist = async (req, res) => {
   const userId = req.user.id;
   const productId = req.params.productId;

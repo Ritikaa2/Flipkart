@@ -5,6 +5,41 @@ import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 
+const productCopy = {
+  1: 'A compact pro iPhone made for people who want flagship power without a bulky feel. The titanium body feels premium in hand, the A17 Pro chip keeps gaming and editing smooth, and the 48MP camera captures crisp detail for travel, portraits, and daily moments.',
+  2: 'A big-screen Samsung flagship for productivity, photos, notes, and entertainment. The S Pen is handy for quick edits, the bright display is easy to read outdoors, and the 200MP camera setup gives you plenty of room to crop, zoom, and shoot in low light.',
+  3: 'A fast, polished OnePlus phone for heavy everyday use. Apps open quickly, the display looks rich and fluid, and the fast charger is useful when you need a quick top-up before work, college, or travel.',
+  4: 'A light MacBook for work, study, browsing, and creative tasks. It starts quickly, stays quiet, and gives dependable battery life, making it easy to carry from desk to cafe to classroom without feeling weighed down.',
+  5: 'Comfortable over-ear headphones for flights, office focus, and late-night music. Noise cancellation cuts distractions well, calls sound clear, and the soft earcups make long listening sessions easier.',
+  6: 'A clean dark blue shirt that works for office days, casual evenings, and weekend plans. The cotton fabric feels breathable, the regular fit is easy to wear, and the solid color pairs well with jeans or chinos.',
+  7: 'Sporty everyday sneakers with a familiar Air Max look and soft cushioning underfoot. They are easy to style with jeans, joggers, and casual fits while still feeling comfortable for long walks.',
+  8: 'A simple queen-size platform bed that gives the room a neat, modern base. The engineered wood build feels steady, the wenge finish is easy to match, and the low profile keeps the bedroom looking clean.',
+  9: 'A practical work chair for study tables and home offices. The mesh back keeps air moving, the seat feels supportive for daily work, and the rolling base makes it easy to shift around your desk.',
+  10: 'A front-load washing machine built for regular family laundry. It handles clothes gently, saves power with inverter technology, and offers useful wash motions for daily wear, towels, and delicate fabrics.',
+  11: 'A spacious refrigerator for fresh produce, leftovers, drinks, and freezer storage. Convertible modes make it flexible for busy weeks, and twin cooling helps keep food fresher for longer.',
+  12: 'A kitchen staple with the bold aroma people expect from kachi ghani mustard oil. It works well for tadka, frying, marinades, and traditional Indian recipes where flavor matters.',
+  13: 'Soft, reliable atta for everyday rotis and parathas. The wheat has a familiar homemade taste, kneads easily, and gives rotis that stay soft for family meals.',
+  14: 'A clean Android flagship with excellent cameras and helpful Pixel software. Photos look natural, the display is bright and sharp, and the phone feels smooth for everyday multitasking.',
+  15: 'A stylish Motorola phone with a curved pOLED display and very fast charging. It feels slim in hand, looks premium, and has enough power for social apps, photos, streaming, and daily work.',
+  16: 'A gaming laptop for players and creators who need strong graphics performance. The RTX GPU, fast display, and sturdy build make it suitable for games, editing, college projects, and demanding apps.',
+  17: 'Lightweight earbuds for music, calls, workouts, and gaming breaks. The case is easy to carry, battery backup is strong for the price, and the sound has the punch people like for daily listening.',
+  18: 'A beginner-friendly DSLR for learning real photography. The kit lens is versatile, the grip feels secure, and Wi-Fi sharing makes it simple to move your shots after portraits, travel, or events.',
+  19: 'Classic blue Levi’s jeans with a slim fit that still feels wearable through the day. The wash is easy to pair, the fabric has comfortable stretch, and the style works with shirts, tees, and sneakers.',
+  20: 'A minimal Fastrack watch for everyday outfits. The black dial keeps it sharp, the strap feels comfortable, and the simple design fits casual, college, and semi-formal looks.',
+  21: 'A roomy tote for office, shopping, and travel days. It has space for daily essentials, a secure zip closure, and a polished texture that looks good without trying too hard.',
+  22: 'A supportive mattress for people who prefer balanced firmness. Memory foam eases pressure around the back and shoulders, while the breathable top fabric keeps sleep comfortable through the night.',
+  23: 'A compact coffee table for apartments and living rooms. The walnut finish looks warm, the open shelf is useful for remotes and magazines, and the size keeps the room uncluttered.',
+  24: 'A cordless vacuum that makes quick cleaning less tiring. It is light enough for sofas, corners, cars, and everyday floor dust, with useful attachments for spots a normal broom misses.',
+  25: 'A useful air fryer for crispy snacks with much less oil. It is easy to set, quick to clean, and works well for fries, nuggets, cutlets, reheating, and small everyday batches.',
+  26: 'A compact instant geyser for quick hot water in bathrooms and kitchens. The LED indicator is easy to read, the tank heats fast, and the safety features make it practical for daily use.',
+  27: 'Unpolished toor dal for homely dals, sambhar, khichdi, and everyday Indian meals. It cooks with a natural taste and keeps the simple comfort of pantry staples.',
+  28: 'A dependable instant coffee for quick hot coffee, cold coffee, and dessert recipes. The aroma is familiar, the jar stores neatly, and one spoon is enough for a fresh daily cup.',
+  29: 'A portable JBL speaker for travel, small parties, and outdoor plans. It has strong bass, a sturdy waterproof build, and enough battery to keep music going through the evening.',
+  30: 'A value-focused 5G phone with a smooth AMOLED display and capable Sony camera sensor. It looks stylish, charges fast, and handles daily apps, photos, and entertainment without fuss.'
+};
+
+const getDescription = (product) => productCopy[Number(product?.id)] || product?.description || '';
+
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -64,7 +99,7 @@ const ProductDetail = () => {
     );
   }
 
-  const { name, price, mrp, rating, rating_count, review_count, description, specifications, stock, images } = product;
+  const { name, price, mrp, rating, rating_count, review_count, specifications, stock, images } = product;
 
   // Calculate discount percentage
   const discount = Math.round(((mrp - price) / mrp) * 100);
@@ -207,10 +242,10 @@ const ProductDetail = () => {
 
           {/* Pricing Row */}
           <div className="product-price-row flex items-baseline gap-3 mb-6 flex-wrap border-b border-gray-100 pb-5">
-            <span className="text-[28px] font-bold text-flipkart-dark">₹{price.toLocaleString()}</span>
+            <span className="text-[28px] font-bold text-flipkart-dark">Rs. {price.toLocaleString()}</span>
             {mrp > price && (
               <>
-                <span className="text-[16px] text-flipkart-textGray line-through">₹{mrp.toLocaleString()}</span>
+                <span className="text-[16px] text-flipkart-textGray line-through">Rs. {mrp.toLocaleString()}</span>
                 <span className="text-[16px] text-flipkart-green font-bold">{discount}% Off</span>
               </>
             )}
@@ -247,7 +282,7 @@ const ProductDetail = () => {
             <ul className="space-y-2.5 text-[13px] font-medium text-gray-700">
               <li className="flex items-start gap-2">
                 <CheckCircle size={15} className="text-flipkart-green mt-0.5 shrink-0" />
-                <span><strong>Bank Offer:</strong> Flat ₹1,250 Instant Discount on SBI Credit Card transactions.</span>
+                <span><strong>Bank Offer:</strong> Flat Rs. 1,250 Instant Discount on SBI Credit Card transactions.</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle size={15} className="text-flipkart-green mt-0.5 shrink-0" />
@@ -255,7 +290,7 @@ const ProductDetail = () => {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle size={15} className="text-flipkart-green mt-0.5 shrink-0" />
-                <span><strong>Partner Offer:</strong> Sign up for Flipkart Pay Later & get shopping gift card worth ₹250.</span>
+                <span><strong>Partner Offer:</strong> Sign up for Flipkart Pay Later & get shopping gift card worth Rs. 250.</span>
               </li>
             </ul>
           </div>
@@ -263,7 +298,7 @@ const ProductDetail = () => {
           {/* Description Section */}
           <div className="product-desc-card mb-8">
             <h3 className="font-bold text-[14px] text-flipkart-dark uppercase tracking-wider mb-2">Product Description</h3>
-            <p className="text-[14px] font-normal leading-6 text-gray-600">{description}</p>
+            <p className="text-[14px] font-normal leading-6 text-gray-600">{getDescription(product)}</p>
           </div>
 
           {/* Specifications Relational Table */}
@@ -305,16 +340,6 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            <div className="project-description-card">
-              <span>Project Experience</span>
-              <h3>Complete Flipkart-style product experience</h3>
-              <p>
-                This product page includes gallery preview, wishlist, cart checkout, live stock status,
-                offers, specifications, review summary, delivery promises, and a payment-ready checkout flow.
-                It is designed as a complete ecommerce project module rather than a simple product card.
-              </p>
-            </div>
-
             <div className="reviews-panel">
               <div className="reviews-summary">
                 <span>{rating}</span>
@@ -350,3 +375,4 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+

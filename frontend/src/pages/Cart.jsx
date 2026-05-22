@@ -99,10 +99,10 @@ const Cart = () => {
 
                           {/* Pricing row */}
                           <div className="flex items-baseline gap-2.5 mt-2 flex-wrap text-[13px]">
-                            <span className="text-[17px] font-bold text-flipkart-dark">₹{parseFloat(item.price).toLocaleString()}</span>
+                            <span className="text-[17px] font-bold text-flipkart-dark">Rs. {parseFloat(item.price).toLocaleString()}</span>
                             {item.mrp > item.price && (
                               <>
-                                <span className="text-flipkart-textGray line-through">₹{parseFloat(item.mrp).toLocaleString()}</span>
+                                <span className="text-flipkart-textGray line-through">Rs. {parseFloat(item.mrp).toLocaleString()}</span>
                                 <span className="text-flipkart-green font-bold">{discount}% Off</span>
                               </>
                             )}
@@ -185,11 +185,11 @@ const Cart = () => {
               <div className="p-6 space-y-4 text-[14px] font-medium text-gray-700">
                 <div className="flex justify-between">
                   <span>Price ({totalItems} Items)</span>
-                  <span className="font-semibold text-flipkart-dark">₹{totalMrp.toLocaleString()}</span>
+                  <span className="font-semibold text-flipkart-dark">Rs. {totalMrp.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-flipkart-green">
                   <span>Discount</span>
-                  <span className="font-semibold">- ₹{totalDiscount.toLocaleString()}</span>
+                  <span className="font-semibold">- Rs. {totalDiscount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery Charges</span>
@@ -199,14 +199,14 @@ const Cart = () => {
                 {/* Total Paid line */}
                 <div className="border-t border-dashed border-gray-200 pt-4 mt-2 flex justify-between text-[17px] font-bold text-flipkart-dark">
                   <span>Total Amount</span>
-                  <span className="text-flipkart-blue">₹{finalAmount.toLocaleString()}</span>
+                  <span className="text-flipkart-blue">Rs. {finalAmount.toLocaleString()}</span>
                 </div>
               </div>
 
               {/* Savings callout panel */}
               <div className="bg-green-50/50 border-t border-gray-100 p-4 text-[13.5px] font-bold text-flipkart-green text-center flex items-center justify-center gap-2 select-none leading-relaxed">
                 <Shield size={16} className="text-flipkart-green fill-green-150 shrink-0" />
-                <span>You will save ₹{totalDiscount.toLocaleString()} on this order</span>
+                <span>You will save Rs. {totalDiscount.toLocaleString()} on this order</span>
               </div>
 
             </div>
@@ -225,3 +225,4 @@ const Cart = () => {
 };
 
 export default Cart;
+

@@ -93,10 +93,10 @@ const Wishlist = () => {
 
                       {/* Prices details */}
                       <div className="flex items-baseline gap-2.5 mt-2 flex-wrap text-[13px]">
-                        <span className="text-[16px] font-bold text-flipkart-dark">₹{parseFloat(item.price).toLocaleString()}</span>
+                        <span className="text-[16px] font-bold text-flipkart-dark">Rs. {parseFloat(item.price).toLocaleString()}</span>
                         {item.mrp > item.price && (
                           <>
-                            <span className="text-flipkart-textGray line-through">₹{parseFloat(item.mrp).toLocaleString()}</span>
+                            <span className="text-flipkart-textGray line-through">Rs. {parseFloat(item.mrp).toLocaleString()}</span>
                             <span className="text-flipkart-green font-bold">{discount}% Off</span>
                           </>
                         )}
@@ -143,3 +143,4 @@ const Wishlist = () => {
 };
 
 export default Wishlist;
+

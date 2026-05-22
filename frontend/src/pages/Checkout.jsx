@@ -130,7 +130,7 @@ const Checkout = () => {
         setPaymentError(err.response?.data?.message || 'Transaction declined. Please try again.');
         setIsProcessing(false);
       }
-    }, 1800); // 1.8 seconds premium banking processing load
+    }, 1800);
   };
 
   // Card input mask helper (adds spacing every 4 digits)
@@ -521,14 +521,14 @@ const Checkout = () => {
                         <span className="font-semibold text-gray-800">{item.name}</span>
                         <span className="text-[11.5px] text-flipkart-textGray mt-0.5 block">Quantity: {item.quantity}</span>
                       </div>
-                      <span className="font-bold text-flipkart-dark shrink-0">₹{(parseFloat(item.price) * item.quantity).toLocaleString()}</span>
+                      <span className="font-bold text-flipkart-dark shrink-0">Rs. {(parseFloat(item.price) * item.quantity).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
 
                 <div className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-[3px] mt-2">
                   <span className="text-[14px] font-bold text-gray-700">Subtotal for ({totalItems} items):</span>
-                  <span className="text-[17px] font-extrabold text-flipkart-blue">₹{finalAmount.toLocaleString()}</span>
+                  <span className="text-[17px] font-extrabold text-flipkart-blue">Rs. {finalAmount.toLocaleString()}</span>
                 </div>
 
                 <button
@@ -732,7 +732,7 @@ const Checkout = () => {
                   className="bg-flipkart-orange hover:bg-orange-600 text-white font-extrabold px-12 py-4 rounded-[2px] self-end transition text-[14px] tracking-wide uppercase select-none shadow-sm"
                   id="place-order-submit-button"
                 >
-                  Pay ₹{finalAmount.toLocaleString()} & Confirm Order
+                  Pay Rs. {finalAmount.toLocaleString()} & Confirm Order
                 </button>
               </form>
             )}
@@ -750,11 +750,11 @@ const Checkout = () => {
             <div className="p-6 space-y-4 text-[14px] font-medium text-gray-700">
               <div className="flex justify-between">
                 <span>Price ({totalItems} Items)</span>
-                <span className="font-semibold text-flipkart-dark">₹{totalMrp.toLocaleString()}</span>
+                <span className="font-semibold text-flipkart-dark">Rs. {totalMrp.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-flipkart-green">
                 <span>Discount</span>
-                <span className="font-semibold">- ₹{totalDiscount.toLocaleString()}</span>
+                <span className="font-semibold">- Rs. {totalDiscount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Delivery Charges</span>
@@ -763,13 +763,13 @@ const Checkout = () => {
 
               <div className="border-t border-dashed border-gray-200 pt-4 mt-2 flex justify-between text-[17px] font-bold text-flipkart-dark">
                 <span>Total Payable</span>
-                <span className="text-flipkart-blue">₹{finalAmount.toLocaleString()}</span>
+                <span className="text-flipkart-blue">Rs. {finalAmount.toLocaleString()}</span>
               </div>
             </div>
 
             <div className="bg-green-50/50 border-t border-gray-100 p-4 text-[13.5px] font-bold text-flipkart-green text-center flex items-center justify-center gap-2 select-none">
               <ShieldCheck size={16} className="text-flipkart-green fill-green-150" />
-              <span>You save ₹{totalDiscount.toLocaleString()} on this order!</span>
+              <span>You save Rs. {totalDiscount.toLocaleString()} on this order!</span>
             </div>
           </div>
         </div>
@@ -781,3 +781,4 @@ const Checkout = () => {
 };
 
 export default Checkout;
+

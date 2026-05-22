@@ -1,8 +1,5 @@
 const db = require('../config/db');
 
-// @desc    Get cart items for a user
-// @route   GET /api/cart
-// @access  Private
 exports.getCart = async (req, res) => {
   const userId = req.user.id;
 
@@ -14,7 +11,6 @@ exports.getCart = async (req, res) => {
       [userId]
     );
 
-    // Fetch primary images for these products
     const [images] = await db.query('SELECT * FROM product_images WHERE is_primary = 1');
 
     const cartWithImages = cartItems.map(item => {
@@ -32,9 +28,6 @@ exports.getCart = async (req, res) => {
   }
 };
 
-// @desc    Add item to cart
-// @route   POST /api/cart
-// @access  Private
 exports.addToCart = async (req, res) => {
   const userId = req.user.id;
   const { product_id, quantity } = req.body;
@@ -46,14 +39,12 @@ exports.addToCart = async (req, res) => {
   const qty = parseInt(quantity || 1);
 
   try {
-    // Check if item already exists in user's cart
     const [existing] = await db.query(
       'SELECT * FROM cart_items WHERE user_id = ? AND product_id = ?',
       [userId, product_id]
     );
 
     if (existing.length > 0) {
-      // Update quantity
       const newQty = existing[0].quantity + qty;
       await db.query(
         'UPDATE cart_items SET quantity = ? WHERE id = ?',
@@ -62,7 +53,6 @@ exports.addToCart = async (req, res) => {
       return res.status(200).json({ message: 'Cart item quantity updated', cartItemId: existing[0].id });
     }
 
-    // Insert new item
     const [result] = await db.query(
       'INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)',
       [userId, product_id, qty]
@@ -75,9 +65,6 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-// @desc    Update cart item quantity
-// @route   PUT /api/cart/:cartItemId
-// @access  Private
 exports.updateQuantity = async (req, res) => {
   const cartItemId = req.params.cartItemId;
   const { quantity } = req.body;
@@ -103,9 +90,6 @@ exports.updateQuantity = async (req, res) => {
   }
 };
 
-// @desc    Remove item from cart
-// @route   DELETE /api/cart/:cartItemId
-// @access  Private
 exports.deleteCartItem = async (req, res) => {
   const cartItemId = req.params.cartItemId;
 

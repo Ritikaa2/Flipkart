@@ -151,7 +151,7 @@ const Home = () => {
 
   const productFeed = useMemo(() => {
     const real = products.map((item) => ({ ...item, id: Number(item.id) }));
-    const categoryFallbacks = pageConfig.products.map(([name, price, mrp, image_url], index) => ({
+    const fallbackList = pageConfig.products.map(([name, price, mrp, image_url], index) => ({
       id: `${selectedCategory || 'for-you'}-${index}`,
       name,
       price,
@@ -160,18 +160,27 @@ const Home = () => {
       rating: index % 2 ? 4.3 : 4.1,
       rating_count: 31 + index * 17
     }));
-    const mixed = [...real, ...categoryFallbacks, ...fallbackProducts];
-    return Array.from({ length: 36 }, (_, index) => mixed[index % mixed.length]);
+
+    const feed = real.length ? real : [...fallbackList, ...fallbackProducts];
+    return Array.from({ length: 36 }, (_, index) => feed[index % feed.length]);
   }, [products, pageConfig, selectedCategory]);
 
-  const openProduct = (id) => {
-    if (Number.isInteger(id)) navigate(`/product/${id}`);
+  const openProduct = (item) => {
+    const id = Number(item?.id);
+    const hasRealId = Number.isInteger(id) && String(item?.id) === String(id);
+
+    if (hasRealId) {
+      navigate(`/product/${id}`);
+      return;
+    }
+
+    if (item?.name) navigate(`/?search=${encodeURIComponent(item.name)}`);
   };
 
   const ProductTile = ({ item, tall = false }) => (
-    <button className={`fk-feed-card ${tall ? 'is-tall' : ''}`} onClick={() => openProduct(item.id)}>
+    <button className={`fk-feed-card ${tall ? 'is-tall' : ''}`} onClick={() => openProduct(item)}>
       <div className="fk-feed-img">
-        <img src={item.image_url} alt={item.name} />
+        <img src={item.image_url} alt={item.name} loading="lazy" />
         <span>{item.rating || 4.2} * <small>({item.rating_count || 31})</small></span>
       </div>
       <b>{item.name}</b>
@@ -182,6 +191,17 @@ const Home = () => {
 
   const visibleHeroCards = [0, 1, 2].map((offset) => heroPool[(heroIndex + offset) % heroPool.length]);
 
+  if (searchQuery) {
+    return (
+      <SearchResults
+        query={searchQuery}
+        products={products}
+        loading={isLoading}
+        openProduct={openProduct}
+      />
+    );
+  }
+
   return (
     <div className="fk-home">
       <section className="fk-auto-hero">
@@ -191,7 +211,7 @@ const Home = () => {
             className={`fk-auto-hero-card hero-card-${index + 1}`}
             onClick={() => navigate(index === 0 ? '/?category=Mobiles' : '/?category=Electronics')}
           >
-            <img src={card.image} alt={card.title} />
+            <img src={card.image} alt={card.title} loading={index === 0 ? 'eager' : 'lazy'} />
             <span>Back to Campus</span>
             <h2>{card.title}</h2>
             <p>{card.text}</p>
@@ -213,7 +233,7 @@ const Home = () => {
       <section className="fk-category-tiles-row">
         {pageConfig.shortcuts.map((label, index) => (
           <button key={label}>
-            <img src={productFeed[index]?.image_url || fallbackProducts[index % fallbackProducts.length].image_url} alt={label} />
+            <img src={productFeed[index]?.image_url || fallbackProducts[index % fallbackProducts.length].image_url} alt={label} loading="lazy" />
             <span>{label}</span>
           </button>
         ))}
@@ -229,7 +249,7 @@ const Home = () => {
       <section className="fk-shortcuts">
         {shortcutItems.map(([label, image]) => (
           <button key={label}>
-            <img src={image} alt={label} />
+            <img src={image} alt={label} loading="lazy" />
             <span>{label}</span>
           </button>
         ))}
@@ -239,8 +259,8 @@ const Home = () => {
         <h2>Grab or gone</h2>
         <div>
           {productFeed.slice(12, 16).map((item, index) => (
-            <button key={`grab-${index}-${item.id}`} onClick={() => openProduct(item.id)}>
-              <img src={item.image_url} alt={item.name} />
+            <button key={`grab-${index}-${item.id}`} onClick={() => openProduct(item)}>
+              <img src={item.image_url} alt={item.name} loading="lazy" />
               <span>{index === 1 ? 'Shop Now!' : item.name}</span>
               <b>{index === 2 ? 'Min 50% Off' : `From Rs. ${item.price}`}</b>
             </button>
@@ -255,11 +275,11 @@ const Home = () => {
       </section>
 
       <section className="fk-exact-section">
-        <img src="/flipkart-home/everybody-list.png" alt="On everybody's list" />
+        <img src="/flipkart-home/everybody-list.png" alt="On everybody's list" loading="lazy" />
       </section>
 
       <section className="fk-exact-section fk-grwm-banner">
-        <img src="/flipkart-home/grwm-banner.png" alt="GRWM sale extra discounts" />
+        <img src="/flipkart-home/grwm-banner.png" alt="GRWM sale extra discounts" loading="lazy" />
       </section>
 
       <RowSection title="Suggested For You" items={productFeed.slice(4, 12)} openProduct={openProduct} />
@@ -269,7 +289,7 @@ const Home = () => {
         <div>
           {brandCards.map((card) => (
             <button key={card.title}>
-              <img src={card.image} alt={card.title} />
+              <img src={card.image} alt={card.title} loading="lazy" />
               <strong>{card.offer}</strong>
               <span>{card.title}</span>
               <small>AD</small>
@@ -291,12 +311,12 @@ const RowSection = ({ title, items, openProduct }) => (
   <section className="fk-suggested-real">
     <div className="fk-real-head">
       <h2>{title}</h2>
-      <button>→</button>
+      <button>{'>'}</button>
     </div>
     <div className="fk-real-strip">
       {items.map((item, index) => (
-        <button key={`${title}-${index}-${item.id}`} onClick={() => Number.isInteger(item.id) && openProduct(item.id)}>
-          <img src={item.image_url} alt={item.name} />
+        <button key={`${title}-${index}-${item.id}`} onClick={() => openProduct(item)}>
+          <img src={item.image_url} alt={item.name} loading="lazy" />
           <span>{item.rating || 4.1} *</span>
           <b>{item.name}</b>
           <p><del>Rs. {(item.mrp || 999).toLocaleString()}</del> Rs. {(item.price || 299).toLocaleString()}</p>
@@ -306,5 +326,111 @@ const RowSection = ({ title, items, openProduct }) => (
     </div>
   </section>
 );
+
+const SearchResults = ({ query, products, loading, openProduct }) => {
+  const items = products.filter((item) => item?.id);
+  const count = items.length;
+
+  return (
+    <main className="fk-search-page">
+      <div className="fk-search-layout">
+        <aside className="fk-search-filter">
+          <div className="fk-search-filter-head">
+            <h2>Filters</h2>
+          </div>
+          <FilterBlock title="Categories" options={['Mobiles & Accessories', 'Fashion', 'Electronics', 'Home & Furniture']} />
+          <FilterBlock title="Popular filters" options={['Fast delivery', 'Bank offer', 'Assured products', 'High rated']} />
+          <FilterBlock title="Price" options={['Under Rs. 1,000', 'Rs. 1,000 - Rs. 10,000', 'Rs. 10,000 - Rs. 25,000', 'Rs. 25,000+']} />
+        </aside>
+
+        <section className="fk-search-results">
+          <div className="fk-search-head">
+            <p>Home / Search</p>
+            <h1>
+              {loading ? 'Searching...' : count ? `Showing 1 - ${count} of ${count} results for "${query}"` : `No results for "${query}"`}
+            </h1>
+            <div className="fk-sort-row">
+              {['Relevance', 'Popularity', 'Price -- Low to High', 'Price -- High to Low', 'Newest First'].map((label, index) => (
+                <button key={label} className={index === 0 ? 'active' : ''}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loading && <div className="fk-search-message">Loading matching products...</div>}
+
+          {!loading && !count && (
+            <div className="fk-search-empty">
+              <h2>No product found</h2>
+              <p>Try a smaller name like phone, jeans, laptop or watch.</p>
+            </div>
+          )}
+
+          {!loading && items.map((item) => (
+            <SearchItem key={item.id} item={item} onClick={() => openProduct(item)} />
+          ))}
+        </section>
+      </div>
+    </main>
+  );
+};
+
+const FilterBlock = ({ title, options }) => (
+  <div className="fk-filter-block">
+    <h3>{title}</h3>
+    <div>
+      {options.map((option) => (
+        <label key={option}>
+          <input type="checkbox" readOnly />
+          <span>{option}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+);
+
+const SearchItem = ({ item, onClick }) => {
+  const price = Number(item.price || 0);
+  const mrp = Number(item.mrp || price);
+  const off = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+  const details = [
+    item.category_name ? `Best match in ${item.category_name}` : '',
+    item.stock ? `${item.stock} units available` : '',
+    'Fast delivery with safe packaging',
+    'Easy returns and trusted seller support'
+  ].filter(Boolean);
+
+  return (
+    <button className="fk-search-item" onClick={onClick}>
+      <div className="fk-search-photo">
+        <img src={item.image_url} alt={item.name} loading="lazy" />
+      </div>
+
+      <div className="fk-search-copy">
+        <h2>{item.name}</h2>
+        <p>
+          <span>{item.rating || 4.2} *</span>
+          <small>{(item.rating_count || 1200).toLocaleString()} Ratings & Reviews</small>
+        </p>
+        <ul>
+          {details.slice(0, 5).map((line) => <li key={line}>* {line}</li>)}
+        </ul>
+      </div>
+
+      <div className="fk-search-price">
+        <strong>Rs. {price.toLocaleString()}</strong>
+        {mrp > price && (
+          <p>
+            <del>Rs. {mrp.toLocaleString()}</del>
+            <span>{off}% off</span>
+          </p>
+        )}
+        <em>Bank Offer</em>
+        <small>Upto Rs. 5,000 off on exchange</small>
+      </div>
+    </button>
+  );
+};
 
 export default Home;

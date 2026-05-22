@@ -110,16 +110,17 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="auth-page min-h-[80vh] flex items-center justify-center py-10 px-4">
-      <div className="auth-card bg-white w-full max-w-[850px] min-h-[520px] rounded-[4px] shadow-modal overflow-hidden flex flex-col md:flex-row animate-slide-up">
-        
-        <div className="auth-visual bg-flipkart-blue md:w-[35%] p-10 text-white flex flex-col justify-between select-none shrink-0 min-h-[200px] md:min-h-auto">
+    <div className="auth-page">
+      <div className="auth-card">
+        <aside className="auth-side">
           <div>
-            <span className="auth-eyebrow">{isForgotPassword ? 'Account recovery' : isLogin ? 'Welcome back' : 'Join Flipkart'}</span>
-            <h2 className="text-[28px] font-bold tracking-wide">
+            <span>
+              {isForgotPassword ? 'Account recovery' : isLogin ? 'Welcome back' : 'Join Flipkart'}
+            </span>
+            <h2>
               {isForgotPassword ? 'Reset your Flipkart password' : isLogin ? 'Login to your shopping world' : "Create your Flipkart account"}
             </h2>
-            <p className="text-[15px] font-medium text-blue-50 mt-4 leading-6">
+            <p>
               {isForgotPassword
                 ? 'Enter the OTP sent to your email and set a new password to get back to your orders and offers.'
                 : isLogin
@@ -128,114 +129,113 @@ const AuthPage = () => {
             </p>
           </div>
 
-          <div className="auth-benefits hidden md:flex flex-col gap-4 text-blue-100/80 text-[12px] font-medium border-t border-blue-400/30 pt-6 mt-8">
+          <div className="auth-side-points">
             <span className="flex items-center gap-2"><ShoppingBag size={14} className="text-flipkart-yellow" /> 100% genuine products</span>
             <span className="flex items-center gap-2"><Truck size={14} className="text-flipkart-yellow" /> Fast delivery updates</span>
             <span className="flex items-center gap-2"><ShieldCheck size={14} className="text-flipkart-yellow" /> Secure payments</span>
             <span className="flex items-center gap-2"><Gift size={14} className="text-flipkart-yellow" /> Member-only deals</span>
           </div>
-        </div>
+        </aside>
 
-        <div className="auth-form-panel flex-1 p-10 flex flex-col justify-between bg-white relative">
-          <div className="auth-form-heading">
-            <span>{isForgotPassword ? 'Recover your account' : isLogin ? 'Secure account access' : 'Start shopping smarter'}</span>
-            <h1>{isForgotPassword ? 'Forgot password' : isLogin ? 'Sign in' : 'Sign up'}</h1>
+        <section className="auth-form-panel">
+          <div className="auth-heading">
+            <span>
+              {isForgotPassword ? 'Recover your account' : isLogin ? 'Secure account access' : 'Start shopping smarter'}
+            </span>
+            <h1>
+              {isForgotPassword ? 'Forgot password' : isLogin ? 'Sign in' : 'Sign up'}
+            </h1>
             <p>
               {isForgotPassword
                 ? otpSent
                   ? 'Enter the 6-digit OTP from your email and create a fresh password.'
                   : 'Use the email linked to your Flipkart account to receive a reset OTP.'
                 : isLogin
-                ? 'Use your registered email and password. Demo: demo@flipkart.com / demo12345'
+                ? 'Use your registered email and password.'
                 : 'Fill in your details once and enjoy a faster checkout every time.'}
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            
-            {/* Error Message alert banner */}
+          <form onSubmit={handleSubmit} className="auth-form">
             {error && (
-              <div className="bg-red-50 text-red-600 border border-red-200 px-4 py-2.5 rounded text-[13px] font-semibold animate-fade-in">
+              <div className="auth-alert error">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="auth-success-message animate-fade-in">
+              <div className="auth-alert success">
                 <MailCheck size={16} />
                 <span>{success}</span>
               </div>
             )}
 
-            {/* Inputs grid depending on state */}
-            <div className="flex flex-col gap-5">
+            <div className="auth-fields">
               {!isLogin && !isForgotPassword && (
-                <div>
-                  <label className="text-[12px] text-gray-500 font-semibold uppercase block mb-1">Full Name</label>
+                <div className="auth-field">
+                  <label>Full Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your full name"
-                    className="w-full border-b-2 border-gray-200 focus:border-flipkart-blue outline-none py-1.5 text-[14px] font-medium transition-colors text-black bg-transparent"
                     required={!isLogin}
                   />
                 </div>
               )}
 
-              <div>
-                <label className="text-[12px] text-gray-500 font-semibold uppercase block mb-1">Email Address</label>
+              <div className="auth-field">
+                <label>Email Address</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter email address"
-                  className="w-full border-b-2 border-gray-200 focus:border-flipkart-blue outline-none py-1.5 text-[14px] font-medium transition-colors text-black bg-transparent"
                   required
                   disabled={isForgotPassword && otpSent}
                 />
               </div>
 
               {(!isForgotPassword || otpSent) && (
-                <div>
-                  <label className="text-[12px] text-gray-500 font-semibold uppercase block mb-1">{isForgotPassword ? 'New Password' : 'Password'}</label>
+                <div className="auth-field">
+                  <label>{isForgotPassword ? 'New Password' : 'Password'}</label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={isForgotPassword ? 'Enter new password' : 'Enter password'}
-                    className="w-full border-b-2 border-gray-200 focus:border-flipkart-blue outline-none py-1.5 text-[14px] font-medium transition-colors text-black bg-transparent"
                     required
                   />
+                  {!isLogin && !isForgotPassword && (
+                    <p>Use 8+ characters with uppercase, lowercase, number and special character.</p>
+                  )}
                 </div>
               )}
 
               {isForgotPassword && (
                 <>
                   {otpSent && (
-                    <div>
-                      <label className="text-[12px] text-gray-500 font-semibold uppercase block mb-1">Email OTP</label>
+                    <div className="auth-field">
+                      <label>Email OTP</label>
                       <input
                         type="text"
                         inputMode="numeric"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                         placeholder="Enter 6-digit OTP"
-                        className="w-full border-b-2 border-gray-200 focus:border-flipkart-blue outline-none py-1.5 text-[14px] font-medium transition-colors text-black bg-transparent"
                         required
                       />
                     </div>
                   )}
 
                   {otpSent && (
-                    <div>
-                      <label className="text-[12px] text-gray-500 font-semibold uppercase block mb-1">Confirm Password</label>
+                    <div className="auth-field">
+                      <label>Confirm Password</label>
                       <input
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Re-enter new password"
-                        className="w-full border-b-2 border-gray-200 focus:border-flipkart-blue outline-none py-1.5 text-[14px] font-medium transition-colors text-black bg-transparent"
                         required
                       />
                     </div>
@@ -245,41 +245,37 @@ const AuthPage = () => {
 
               {!isLogin && !isForgotPassword && (
                 <>
-                  <div>
-                    <label className="text-[12px] text-gray-500 font-semibold uppercase block mb-1">Phone Number (Optional)</label>
+                  <div className="auth-field">
+                    <label>Phone Number (Optional)</label>
                     <input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Enter 10-digit mobile number"
-                      className="w-full border-b-2 border-gray-200 focus:border-flipkart-blue outline-none py-1.5 text-[14px] font-medium transition-colors text-black bg-transparent"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-[12px] text-gray-500 font-semibold uppercase block mb-1">Delivery Address (Optional)</label>
+                  <div className="auth-field">
+                    <label>Delivery Address (Optional)</label>
                     <input
                       type="text"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="Enter standard shipping address"
-                      className="w-full border-b-2 border-gray-200 focus:border-flipkart-blue outline-none py-1.5 text-[14px] font-medium transition-colors text-black bg-transparent"
                     />
                   </div>
                 </>
               )}
             </div>
 
-            {/* Disclaimer text */}
-            <p className="text-[12px] text-flipkart-textGray leading-relaxed font-medium mt-2">
+            <p className="auth-policy">
               By continuing, you agree to Flipkart's <span className="text-flipkart-blue cursor-pointer hover:underline font-semibold">Terms of Use</span> and <span className="text-flipkart-blue cursor-pointer hover:underline font-semibold">Privacy Policy</span>.
             </p>
 
-            {/* Primary Action Button */}
             <button
               type="submit"
               disabled={loading}
-              className="bg-flipkart-orange hover:bg-orange-600 text-white font-bold py-3.5 rounded-[2px] transition text-[15px] shadow-sm flex items-center justify-center gap-2"
+              className="auth-submit"
               id="auth-submit-button"
             >
               {loading ? (
@@ -305,7 +301,7 @@ const AuthPage = () => {
             <button
               type="button"
               onClick={() => switchAuthMode('forgot')}
-              className="forgot-password-button"
+              className="auth-link-button"
             >
               <KeyRound size={15} />
               Forgot Password?
@@ -328,14 +324,14 @@ const AuthPage = () => {
                 setLoading(false);
               }}
               disabled={loading}
-              className="forgot-password-button"
+              className="auth-link-button"
             >
               <MailCheck size={15} />
               Resend OTP
             </button>
           )}
 
-          <div className="auth-content-strip">
+          <div className="auth-trust-row">
             <div>
               <BadgeCheck size={18} />
               <span>Verified sellers</span>
@@ -350,34 +346,29 @@ const AuthPage = () => {
             </div>
           </div>
 
-          {/* Toggle Login/Signup Trigger */}
-          <div className="mt-8 text-center text-[14px] font-semibold text-flipkart-blue">
+          <div className="auth-switch">
             {isForgotPassword ? (
               <span
                 onClick={() => switchAuthMode('login')}
-                className="cursor-pointer hover:underline select-none block bg-slate-50 border border-slate-100 py-3 rounded hover:bg-slate-100 transition"
               >
                 <ArrowLeft size={16} /> Back to Login
               </span>
             ) : isLogin ? (
               <span
                 onClick={() => switchAuthMode('signup')}
-                className="cursor-pointer hover:underline select-none block bg-slate-50 border border-slate-100 py-3 rounded hover:bg-slate-100 transition"
               >
                 New to Flipkart? Create an account
               </span>
             ) : (
               <span
                 onClick={() => switchAuthMode('login')}
-                className="cursor-pointer hover:underline select-none block bg-slate-50 border border-slate-100 py-3 rounded hover:bg-slate-100 transition"
               >
                 Existing User? Log in to your account
               </span>
             )}
           </div>
 
-        </div>
-
+        </section>
       </div>
     </div>
   );

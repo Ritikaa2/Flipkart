@@ -107,6 +107,8 @@ const Navbar = () => {
   }, [searchQuery]);
 
   const activeKey = new URLSearchParams(location.search).get('category') || (location.pathname === '/' ? 'For You' : '');
+  const savedAddress = user?.address?.trim();
+  const shortAddress = savedAddress && savedAddress.length > 38 ? `${savedAddress.slice(0, 38)}...` : savedAddress;
 
   const submitSearch = (event) => {
     event.preventDefault();
@@ -130,7 +132,11 @@ const Navbar = () => {
           <button className="fk-chip-image"><img src="/flipkart-icons/chip-emi.png" alt="EMI" /></button>
           <button className="fk-chip-image"><img src="/flipkart-icons/chip-travel.png" alt="Travel" /></button>
           <button className="fk-chip-image"><img src="/flipkart-icons/chip-grocery.png" alt="Grocery" /></button>
-          <p><Home size={14} /> <b>HOME</b> House no 337,dhani bilaspur,villa... <ChevronDown size={13} /></p>
+          {isAuthenticated && shortAddress && (
+            <p className="fk-address-chip">
+              <Home size={14} /> <b>HOME</b> {shortAddress} <ChevronDown size={13} />
+            </p>
+          )}
           <span className="fk-coin">0</span>
         </div>
 

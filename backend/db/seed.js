@@ -3,17 +3,15 @@ const seedData = require('./seedData');
 const bcrypt = require('bcryptjs');
 
 async function seedDatabase() {
-  console.log("Starting database seeding process...");
+  console.log("Seeding database...");
 
   if (db.isOfflineMode()) {
-    console.log("INFO: Application is in local-JSON mode. The JSON database file 'mock_db.json' was automatically created and seeded during initialization!");
-    console.log("Seeding complete!");
+    console.log("Local JSON database is ready.");
     process.exit(0);
   }
 
   try {
-    console.log("Wiping existing records in MySQL to prevent duplicate keys...");
-    // Disable foreign key checks to safely truncate
+    console.log("Clearing old MySQL data...");
     await db.query("SET FOREIGN_KEY_CHECKS = 0");
     await db.query("TRUNCATE TABLE wishlist");
     await db.query("TRUNCATE TABLE cart_items");
@@ -25,18 +23,13 @@ async function seedDatabase() {
     await db.query("TRUNCATE TABLE users");
     await db.query("SET FOREIGN_KEY_CHECKS = 1");
 
-    console.log("Inserting categories...");
     for (const cat of seedData.categories) {
       await db.query("INSERT INTO categories (id, name, image_url) VALUES (?, ?, ?)", [
         cat.id, cat.name, cat.image_url
       ]);
     }
-    console.log(`Inserted ${seedData.categories.length} categories.`);
-
-    console.log("Inserting products...");
     let imageInsertCount = 0;
     for (const prod of seedData.products) {
-      // Insert product record
       await db.query(
         "INSERT INTO products (id, category_id, name, price, mrp, rating, rating_count, review_count, description, specifications, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
@@ -54,7 +47,6 @@ async function seedDatabase() {
         ]
       );
 
-      // Insert corresponding product images
       if (prod.images && prod.images.length > 0) {
         for (let i = 0; i < prod.images.length; i++) {
           const imgUrl = prod.images[i];
@@ -67,9 +59,8 @@ async function seedDatabase() {
         }
       }
     }
-    console.log(`Inserted ${seedData.products.length} products with ${imageInsertCount} images.`);
+    console.log(`Inserted ${seedData.categories.length} categories, ${seedData.products.length} products and ${imageInsertCount} images.`);
 
-    // Insert a default demo user for testing
     const demoPassword = await bcrypt.hash("demo12345", 10);
     await db.query(
       "INSERT INTO users (id, name, email, password, phone, address) VALUES (?, ?, ?, ?, ?, ?)",
@@ -82,9 +73,8 @@ async function seedDatabase() {
         "123, Flipkart Street, Tech Park, Bangalore, Karnataka - 560001"
       ]
     );
-    console.log("Demo user 'demo@flipkart.com' created (password: demo12345).");
-
-    console.log("Database seeded successfully in MySQL!");
+    console.log("Demo user: demo@flipkart.com / demo12345");
+    console.log("Database seeded.");
     process.exit(0);
   } catch (error) {
     console.error("Error during MySQL database seeding:", error);

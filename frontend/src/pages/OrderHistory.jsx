@@ -24,8 +24,9 @@ const OrderHistory = () => {
         const res = await api.get('/orders');
         const loadedOrders = res.data.orders || [];
         setOrders(loadedOrders);
+        setIsLoading(false);
 
-        const details = await Promise.all(
+        Promise.all(
           loadedOrders.map(async (order) => {
             try {
               const detailRes = await api.get(`/orders/details/${order.id}`);
@@ -34,11 +35,9 @@ const OrderHistory = () => {
               return [order.id, []];
             }
           })
-        );
-        setItemsMap(Object.fromEntries(details));
+        ).then((details) => setItemsMap(Object.fromEntries(details)));
       } catch (err) {
         console.error('Orders load failed:', err);
-      } finally {
         setIsLoading(false);
       }
     };
@@ -79,16 +78,22 @@ const OrderHistory = () => {
   });
 
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-[60vh]"><div className="animate-spin rounded-full h-10 w-10 border-4 border-flipkart-blue border-t-transparent" /></div>;
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-50">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#2874f0] border-t-transparent" />
+      </div>
+    );
   }
 
   if (orders.length === 0) {
     return (
-      <div className="orders-empty-state">
-        <ShoppingBag size={52} />
-        <h2>No Orders Placed Yet!</h2>
-        <p>Browse the catalog and place an order to see Flipkart-style tracking here.</p>
-        <button onClick={() => navigate('/')}>Start Shopping</button>
+      <div className="mx-auto my-12 grid min-h-[60vh] max-w-xl place-items-center rounded-xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+        <div>
+          <ShoppingBag size={52} className="mx-auto text-[#2874f0]" />
+          <h2 className="mt-4 text-2xl font-extrabold text-slate-950">No orders placed yet</h2>
+          <p className="mt-2 text-sm text-slate-500">Browse the catalog and place an order to see tracking here.</p>
+          <button onClick={() => navigate('/')} className="mt-6 rounded-md bg-[#fb641b] px-6 py-3 text-sm font-bold text-white hover:bg-orange-600">Start Shopping</button>
+        </div>
       </div>
     );
   }
@@ -228,41 +233,82 @@ const OrderHistory = () => {
 
   return (
     <div className="fk-orders-page">
-      <div className="fk-order-breadcrumb">Home &gt; My Account &gt; My Orders</div>
-      <div className="fk-orders-layout">
-        <aside className="fk-orders-filter">
-          <h2>Filters</h2>
-          <strong>ORDER STATUS</strong>
-          {['All', 'Order placed', 'Delivered', 'Cancelled'].map((status) => (
-            <label key={status}><input type="checkbox" checked={statusFilter === status} onChange={() => setStatusFilter(status)} /> {status}</label>
-          ))}
-          <strong>ORDER TIME</strong>
-          {['Last 30 days', '2024', '2023', 'Older'].map((item) => <label key={item}><input type="checkbox" readOnly /> {item}</label>)}
+      <div className="fk-orders-shell">
+        <div className="fk-orders-crumb">Home &gt; My Account &gt; My Orders</div>
+
+        <div className="fk-orders-grid">
+          <aside className="fk-orders-filter">
+            <h2>Filters</h2>
+            <div>
+              <div>
+                <strong>Order status</strong>
+                <div>
+                  {['All', 'Order placed', 'Delivered', 'Cancelled'].map((status) => (
+                    <label key={status}>
+                      <input type="radio" name="status" checked={statusFilter === status} onChange={() => setStatusFilter(status)} />
+                      {status}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <strong>Order time</strong>
+                <div>
+                  {['Last 30 days', '2026', '2025', 'Older'].map((item) => (
+                    <label key={item}>
+                      <input type="checkbox" readOnly />
+                      {item}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
         </aside>
 
-        <main>
-          <form className="fk-order-search" onSubmit={(e) => e.preventDefault()}>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search your orders here" />
-            <button><Search size={16} /> Search Orders</button>
+        <main className="fk-orders-main">
+          <form className="fk-orders-search" onSubmit={(e) => e.preventDefault()}>
+            <div>
+              <Search size={18} />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by product, order ID or name"
+              />
+            </div>
+            <button>Search</button>
           </form>
 
           <div className="fk-order-list">
             {visibleOrders.map((order) => (
-              <article key={order.id} onClick={() => setSelectedOrderId(order.id)}>
-                <img src={order.firstItem?.image_url || 'https://via.placeholder.com/90'} alt={order.firstItem?.name || 'Order product'} />
-                <div>
+              <article
+                key={order.id}
+                onClick={() => setSelectedOrderId(order.id)}
+                className="fk-order-card"
+              >
+                <div className="fk-order-thumb">
+                  <img src={order.firstItem?.image_url || 'https://via.placeholder.com/90'} alt={order.firstItem?.name || 'Order product'} />
+                </div>
+                <div className="fk-order-copy">
                   <h3>{order.firstItem?.name || `Order #${order.id}`}</h3>
                   <p>Color: {order.firstItem?.color || 'Black'}</p>
+                  <small>OD{String(order.id).padStart(16, '0')}</small>
                 </div>
-                <strong>Rs. {parseInt(order.final_amount || 0).toLocaleString()}</strong>
-                <aside>
-                  <b className={order.status === 'Cancelled' ? 'cancelled' : 'placed'}>{order.statusText}</b>
+                <strong className="fk-order-price">Rs. {parseInt(order.final_amount || 0).toLocaleString()}</strong>
+                <aside className="fk-order-status">
+                  <b className={order.status === 'Cancelled' ? 'cancelled' : ''}>{order.statusText}</b>
                   <p>{order.status === 'Cancelled' ? `Refund status: ${order.refund_status || 'Refund processing'}.` : `Payment ${order.payment_status || 'Paid'} via ${order.payment_method}. Delivery update will appear soon.`}</p>
                 </aside>
               </article>
             ))}
+            {visibleOrders.length === 0 && (
+              <div className="fk-orders-empty">
+                No matching orders found.
+              </div>
+            )}
           </div>
         </main>
+        </div>
       </div>
     </div>
   );

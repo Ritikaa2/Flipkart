@@ -10,6 +10,5 @@ router.post('/send-reset-otp', authController.sendResetOtp);
 router.post('/forgot-password', authController.forgotPassword);
 
 // Private routes
-router.get('/me', authMiddleware, authController.getMe);
-
+router.get('/me', authController.getMe);
 module.exports = router;

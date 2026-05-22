@@ -1,0 +1,479 @@
+{
+  "users": [],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Mobiles",
+      "image_url": "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "id": 2,
+      "name": "Electronics",
+      "image_url": "https://images.unsplash.com/photo-1527689368864-3a821dbccc34?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "id": 3,
+      "name": "Fashion",
+      "image_url": "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "id": 4,
+      "name": "Furniture",
+      "image_url": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "id": 5,
+      "name": "Appliances",
+      "image_url": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "id": 6,
+      "name": "Grocery",
+      "image_url": "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=200&auto=format&fit=crop"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "category_id": 1,
+      "name": "Apple iPhone 15 Pro (Natural Titanium, 128 GB)",
+      "price": 127990,
+      "mrp": 134900,
+      "rating": 4.7,
+      "rating_count": 8432,
+      "review_count": 512,
+      "description": "Experience the ultimate iPhone experience with Apple iPhone 15 Pro. Featuring a strong and light aerospace-grade titanium design, a massive camera upgrade with a 48MP Main camera, and the industry-defining A17 Pro chip for next-level mobile gaming and efficiency.",
+      "stock": 25,
+      "specifications": {
+        "Brand": "Apple",
+        "Model Name": "iPhone 15 Pro",
+        "Color": "Natural Titanium",
+        "Storage": "128 GB",
+        "Screen Size": "6.1 inches",
+        "Primary Camera": "48MP + 12MP + 12MP",
+        "Secondary Camera": "12MP Front Camera",
+        "Processor": "A17 Pro Chip",
+        "OS": "iOS 17"
+      }
+    },
+    {
+      "id": 2,
+      "category_id": 1,
+      "name": "Samsung Galaxy S24 Ultra 5G (Titanium Gray, 256 GB)",
+      "price": 129999,
+      "mrp": 139999,
+      "rating": 4.8,
+      "rating_count": 5211,
+      "review_count": 420,
+      "description": "Welcome to the era of mobile AI. With Galaxy S24 Ultra in your hands, you can unleash whole new levels of creativity, productivity, and possibility. Features a 200MP Main camera, integrated S Pen, Snapdragon 8 Gen 3 processor, and an extraordinary Corning Gorilla Armor screen display.",
+      "stock": 30,
+      "specifications": {
+        "Brand": "Samsung",
+        "Model Name": "Galaxy S24 Ultra",
+        "Color": "Titanium Gray",
+        "Storage": "256 GB",
+        "RAM": "12 GB",
+        "Screen Size": "6.8 inches",
+        "Primary Camera": "200MP + 50MP + 12MP + 10MP",
+        "Processor": "Snapdragon 8 Gen 3",
+        "Battery": "5000 mAh"
+      }
+    },
+    {
+      "id": 3,
+      "category_id": 1,
+      "name": "OnePlus 12 5G (Silky Black, 256 GB)",
+      "price": 64999,
+      "mrp": 69999,
+      "rating": 4.6,
+      "rating_count": 3120,
+      "review_count": 185,
+      "description": "The OnePlus 12 redefine speed and elegance. Combining standard Snapdragon 8 Gen 3 power with 100W SUPERVOOC charging, a beautiful 2K 120Hz ProXDR display, and 4th Gen Hasselblad Camera System for mobile.",
+      "stock": 45,
+      "specifications": {
+        "Brand": "OnePlus",
+        "Model Name": "12 5G",
+        "Color": "Silky Black",
+        "Storage": "256 GB",
+        "RAM": "12 GB",
+        "Screen Size": "6.82 inches",
+        "Battery": "5400 mAh",
+        "Charging": "100W Wired + 50W Wireless"
+      }
+    },
+    {
+      "id": 4,
+      "category_id": 2,
+      "name": "Apple MacBook Air Apple M2 - (8 GB/256 GB SSD/macOS Ventura)",
+      "price": 84990,
+      "mrp": 99900,
+      "rating": 4.7,
+      "rating_count": 14529,
+      "review_count": 980,
+      "description": "Redesigned around the next-generation M2 chip, the MacBook Air is strikingly thin and brings exceptional speed and power efficiency inside its durable all-aluminum enclosure. It's the ultra-capable, ultra-portable laptop that lets you work, play, or create just about anything.",
+      "stock": 15,
+      "specifications": {
+        "Brand": "Apple",
+        "Model Name": "MacBook Air M2",
+        "Processor": "Apple M2 Chip",
+        "RAM": "8 GB Unified Memory",
+        "Storage": "256 GB SSD",
+        "Screen Size": "13.6 inches Liquid Retina",
+        "OS": "macOS Ventura",
+        "Battery Life": "Up to 18 Hours"
+      }
+    },
+    {
+      "id": 5,
+      "category_id": 2,
+      "name": "Sony WH-1000XM5 Wireless Active Noise Cancelling Headphones",
+      "price": 29990,
+      "mrp": 34990,
+      "rating": 4.5,
+      "rating_count": 4890,
+      "review_count": 382,
+      "description": "Sony's industry-leading noise cancellation gets even better. Experience magnificent sound quality, exceptionally clear hands-free calls, and a ultra-comfortable design with the WH-1000XM5 wireless headphones. Powered by 8 microphones and dual processors.",
+      "stock": 40,
+      "specifications": {
+        "Brand": "Sony",
+        "Model Name": "WH-1000XM5",
+        "Color": "Black",
+        "Headphone Type": "Over the Ear",
+        "Battery Life": "Up to 30 Hours",
+        "Bluetooth Version": "5.2",
+        "Charging Time": "3 min charge for 3 hrs playback"
+      }
+    },
+    {
+      "id": 6,
+      "category_id": 3,
+      "name": "Roadster Men Solid Casual Shirt (Dark Blue)",
+      "price": 649,
+      "mrp": 1499,
+      "rating": 4,
+      "rating_count": 24500,
+      "review_count": 2132,
+      "description": "Add a touch of definition to your casual wear collection with this stylish dark blue shirt from Roadster. Tailored with 100% premium cotton, it offers a regular fit and curved hemline, perfect for office days or weekend hangouts.",
+      "stock": 120,
+      "specifications": {
+        "Brand": "Roadster",
+        "Size": "L",
+        "Fabric": "100% Cotton",
+        "Fit": "Regular Fit",
+        "Pattern": "Solid",
+        "Sleeve": "Full Sleeve",
+        "Collar": "Spread Collar"
+      }
+    },
+    {
+      "id": 7,
+      "category_id": 3,
+      "name": "Nike Air Max Excee Running Shoes For Men",
+      "price": 5999,
+      "mrp": 7995,
+      "rating": 4.3,
+      "rating_count": 1240,
+      "review_count": 98,
+      "description": "Inspired by the classic Nike Air Max 90, the Nike Air Max Excee is a celebration of a classic through a new lens. Elongated lines and distorted proportions on the upper bring the iconic look into a modern space while visible Air cushioning keeps you comfortable.",
+      "stock": 50,
+      "specifications": {
+        "Brand": "Nike",
+        "Model": "Air Max Excee",
+        "Color": "White/Black/Red",
+        "Outer Material": "Mesh, Synthetic Leather",
+        "Sole Material": "Rubber",
+        "Ideal For": "Men",
+        "Occasion": "Sports/Casual"
+      }
+    },
+    {
+      "id": 8,
+      "category_id": 4,
+      "name": "Sleephead Bae Queen Size Engineered Wood Platform Bed",
+      "price": 10499,
+      "mrp": 18999,
+      "rating": 4.4,
+      "rating_count": 3410,
+      "review_count": 290,
+      "description": "Get home the Bae Platform Bed by Sleephead and sleep like royalty. Crafted with durable high-grade engineered wood in a natural wenge finish, it brings modern style and sturdy construction to your bedroom layout.",
+      "stock": 8,
+      "specifications": {
+        "Brand": "Sleephead",
+        "Bed Size": "Queen",
+        "Material": "Engineered Wood",
+        "Finish Color": "Wenge",
+        "Delivery Condition": "Knock Down (Assembly Required)",
+        "Dimensions": "Width: 156 cm, Height: 78 cm, Depth: 206 cm"
+      }
+    },
+    {
+      "id": 9,
+      "category_id": 4,
+      "name": "Green Soul Seoul Ergonomic Office Chair",
+      "price": 4299,
+      "mrp": 8990,
+      "rating": 4.2,
+      "rating_count": 15200,
+      "review_count": 1420,
+      "description": "Work in total comfort with the Green Soul Seoul Mesh Ergonomic Chair. Features standard lower back support, premium breathable mesh, heavy-duty metal base, and smooth dual-wheel casters for effortless mobility.",
+      "stock": 25,
+      "specifications": {
+        "Brand": "Green Soul",
+        "Model": "Seoul",
+        "Color": "Black",
+        "Material": "High Density Mesh",
+        "Base": "Nylon",
+        "Maximum Load Capacity": "110 kg",
+        "Height Adjustable": "Yes"
+      }
+    },
+    {
+      "id": 10,
+      "category_id": 5,
+      "name": "LG 8 kg 5 Star Inverter Fully Automatic Front Load Washing Machine",
+      "price": 34990,
+      "mrp": 42990,
+      "rating": 4.6,
+      "rating_count": 8530,
+      "review_count": 671,
+      "description": "LG Front Load washing machines feature standard 6 Motion Direct Drive technology, which moves the wash drum in multiple directions to give fabrics an ultra-gentle clean. Highly energy-efficient with a certified 5-star rating.",
+      "stock": 12,
+      "specifications": {
+        "Brand": "LG",
+        "Washing Capacity": "8 kg",
+        "Energy Rating": "5 Star",
+        "Control Type": "Fully Automatic Front Load",
+        "Inverter Tech": "Yes, Direct Drive Inverter",
+        "Max Spin Speed": "1400 RPM",
+        "Warranty": "2 Years comprehensive, 10 Years on Motor"
+      }
+    },
+    {
+      "id": 11,
+      "category_id": 5,
+      "name": "Samsung 322 L 3 Star Convertible Double Door Refrigerator",
+      "price": 36990,
+      "mrp": 46990,
+      "rating": 4.5,
+      "rating_count": 5120,
+      "review_count": 320,
+      "description": "Store all your food fresh and healthy with Samsung's Twin Cooling Plus Convertible double-door refrigerator. Provides optimal humidity and temperature control in both the fridge and freezer independently, with 5 conversion modes.",
+      "stock": 10,
+      "specifications": {
+        "Brand": "Samsung",
+        "Capacity": "322 L",
+        "Defrosting Type": "Frost Free",
+        "Compressor Type": "Digital Inverter",
+        "Energy Rating": "3 Star",
+        "Convertible": "Yes, 5-in-1 Modes"
+      }
+    },
+    {
+      "id": 12,
+      "category_id": 6,
+      "name": "Fortune Premium Kachi Ghani Mustard Oil (1 L Bottle)",
+      "price": 165,
+      "mrp": 195,
+      "rating": 4.4,
+      "rating_count": 45290,
+      "review_count": 2310,
+      "description": "Fortune Kachi Ghani Pure Mustard Oil is cold-pressed from high-grade mustard seeds. It retains its natural aroma, strong flavor, and nutritious value, making it perfect for direct cooking, frying, or making traditional Indian pickles.",
+      "stock": 300,
+      "specifications": {
+        "Brand": "Fortune",
+        "Type": "Mustard Oil",
+        "Quantity": "1 L",
+        "Container Type": "Bottle",
+        "Cold Pressed": "Yes",
+        "Organic": "No"
+      }
+    },
+    {
+      "id": 13,
+      "category_id": 6,
+      "name": "Aashirvaad Shudh Chakki Whole Wheat Atta (10 kg)",
+      "price": 449,
+      "mrp": 499,
+      "rating": 4.5,
+      "rating_count": 67120,
+      "review_count": 4210,
+      "description": "Aashirvaad Whole Wheat Atta is made from superior-quality grains harvested from the golden fields of India. It is ground through a traditional stone-chakki process to lock in all nutrients, producing exceptionally soft and tasty rotis.",
+      "stock": 150,
+      "specifications": {
+        "Brand": "Aashirvaad",
+        "Type": "Whole Wheat Atta",
+        "Quantity": "10 kg",
+        "Form Factor": "Powdered",
+        "Container Type": "Bag"
+      }
+    }
+  ],
+  "product_images": [
+    {
+      "id": 1,
+      "product_id": 1,
+      "image_url": "https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 2,
+      "product_id": 1,
+      "image_url": "https://images.unsplash.com/photo-1695048133036-749e755582f3?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 3,
+      "product_id": 1,
+      "image_url": "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 4,
+      "product_id": 2,
+      "image_url": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 5,
+      "product_id": 2,
+      "image_url": "https://images.unsplash.com/photo-1580910051074-3eb694886505?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 6,
+      "product_id": 3,
+      "image_url": "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 7,
+      "product_id": 3,
+      "image_url": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 8,
+      "product_id": 4,
+      "image_url": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 9,
+      "product_id": 4,
+      "image_url": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 10,
+      "product_id": 5,
+      "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 11,
+      "product_id": 5,
+      "image_url": "https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 12,
+      "product_id": 6,
+      "image_url": "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 13,
+      "product_id": 6,
+      "image_url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 14,
+      "product_id": 7,
+      "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 15,
+      "product_id": 7,
+      "image_url": "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 16,
+      "product_id": 8,
+      "image_url": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 17,
+      "product_id": 8,
+      "image_url": "https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 18,
+      "product_id": 9,
+      "image_url": "https://images.unsplash.com/photo-1505797149-43b0069ec26b?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 19,
+      "product_id": 9,
+      "image_url": "https://images.unsplash.com/photo-1580481072645-022f9a6dbf27?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 20,
+      "product_id": 10,
+      "image_url": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 21,
+      "product_id": 10,
+      "image_url": "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 22,
+      "product_id": 11,
+      "image_url": "https://images.unsplash.com/photo-1571175432247-5c868dbb09ef?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 23,
+      "product_id": 11,
+      "image_url": "https://images.unsplash.com/photo-1584622781564-1d987f7333c1?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 24,
+      "product_id": 12,
+      "image_url": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 25,
+      "product_id": 12,
+      "image_url": "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    },
+    {
+      "id": 26,
+      "product_id": 13,
+      "image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 1
+    },
+    {
+      "id": 27,
+      "product_id": 13,
+      "image_url": "https://images.unsplash.com/photo-1574316071802-0d684efa7bf5?q=80&w=600&auto=format&fit=crop",
+      "is_primary": 0
+    }
+  ],
+  "cart_items": [],
+  "wishlist": [],
+  "orders": [],
+  "order_items": []
+}

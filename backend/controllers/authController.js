@@ -190,7 +190,6 @@ exports.forgotPassword = async (req, res) => {
 };
 
 exports.getMe = async (req, res) => {
-<<<<<<< HEAD
   try {
     const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.user.id]);
     if (!users.length) {
@@ -202,14 +201,4 @@ exports.getMe = async (req, res) => {
     console.error('Profile error:', err);
     res.status(500).json({ message: 'Could not load profile' });
   }
-=======
-  return res.status(200).json({
-    success: true,
-    user: {
-      id: 1,
-      name: "Ritika",
-      email: "ritika@gmail.com"
-    }
-  });
->>>>>>> b04ee65f072b9e09fda8801d5adbae1cccda64ee
 };

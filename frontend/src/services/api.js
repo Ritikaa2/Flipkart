@@ -12,6 +12,18 @@ const api = axios.create({
 // Interceptor to inject JWT from localStorage
 api.interceptors.request.use(
   (config) => {
+    const method = (config.method || 'get').toLowerCase();
+    const url = config.url || '';
+    const isPublicGet = method === 'get' && (
+      url.startsWith('/products') ||
+      url === '/products' ||
+      url.startsWith('/products/')
+    );
+
+    if (isPublicGet) {
+      return config;
+    }
+
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;

@@ -116,10 +116,10 @@ const Navbar = () => {
     navigate(searchQuery.trim() ? `/?search=${encodeURIComponent(searchQuery.trim())}` : '/');
   };
 
-  const selectSuggestion = (name) => {
-    setSearchQuery(name);
+  const selectSuggestion = (item) => {
+    setSearchQuery(item.name);
     setShowSuggestions(false);
-    navigate(`/?search=${encodeURIComponent(name)}`);
+    navigate(item.id ? `/product/${item.id}` : `/?search=${encodeURIComponent(item.name)}`);
   };
 
   const closeMenu = () => setOpenMenu('');
@@ -154,7 +154,7 @@ const Navbar = () => {
             {showSuggestions && suggestions.length > 0 && (
               <div className="fk-suggestions">
                 {suggestions.map((item) => (
-                  <button key={item.id} onClick={() => selectSuggestion(item.name)}>
+                  <button key={item.id} onClick={() => selectSuggestion(item)}>
                     <Search size={14} />
                     <span>{item.name}</span>
                     <small>{item.category_name}</small>

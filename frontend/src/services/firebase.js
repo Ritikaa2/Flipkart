@@ -28,38 +28,49 @@ export const getFirebaseMessaging = async () => {
 };
 
 export const requestFirebaseNotificationToken = async () => {
-  if (typeof window === 'undefined' || !('Notification' in window)) {
+  try {
+    if (
+      typeof window === 'undefined' ||
+      !('Notification' in window) ||
+      !('serviceWorker' in navigator) ||
+      !('PushManager' in window)
+    ) {
+      return null;
+    }
+
+    const existingToken = localStorage.getItem('firebaseDeviceToken');
+    if (existingToken) return existingToken;
+
+    const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
+    if (!vapidKey) {
+      console.warn('Missing VITE_FIREBASE_VAPID_KEY. Firebase browser push token was not created.');
+      return null;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      return null;
+    }
+
+    const messaging = await getFirebaseMessaging();
+    if (!messaging) return null;
+
+    await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    const registration = await navigator.serviceWorker.ready;
+    const token = await getToken(messaging, {
+      vapidKey,
+      serviceWorkerRegistration: registration
+    });
+
+    if (token) {
+      localStorage.setItem('firebaseDeviceToken', token);
+    }
+
+    return token || null;
+  } catch (err) {
+    console.warn('Firebase browser push token was skipped:', err.message || err);
     return null;
   }
-
-  const existingToken = localStorage.getItem('firebaseDeviceToken');
-  if (existingToken) return existingToken;
-
-  const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
-  if (!vapidKey) {
-    console.warn('Missing VITE_FIREBASE_VAPID_KEY. Firebase browser push token was not created.');
-    return null;
-  }
-
-  const permission = await Notification.requestPermission();
-  if (permission !== 'granted') {
-    return null;
-  }
-
-  const messaging = await getFirebaseMessaging();
-  if (!messaging) return null;
-
-  const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-  const token = await getToken(messaging, {
-    vapidKey,
-    serviceWorkerRegistration: registration
-  });
-
-  if (token) {
-    localStorage.setItem('firebaseDeviceToken', token);
-  }
-
-  return token || null;
 };
 
 export const listenForFirebaseOrderMessages = async (callback) => {

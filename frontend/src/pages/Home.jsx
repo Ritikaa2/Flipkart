@@ -3,28 +3,29 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 const fallbackProducts = [
-  ['KOTTY Women Regular Fit Black Trousers', 297, 1999, 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=500&auto=format&fit=crop'],
-  ['Ankit fashion Women Straight Pants', 350, 1999, 'https://images.unsplash.com/photo-1509551388413-e18d0ac5d495?q=80&w=500&auto=format&fit=crop'],
-  ['KOTTY Women Regular Fit Beige Trousers', 362, 1999, 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?q=80&w=500&auto=format&fit=crop'],
-  ['NEYS A Women Regular Fit Black Pants', 362, 999, 'https://images.unsplash.com/photo-1506629905607-d405b7a30db9?q=80&w=500&auto=format&fit=crop'],
-  ['OPPO A6x 4G Mobile', 11589, 12999, 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=500&auto=format&fit=crop'],
-  ['Vivo T5x 5G Cyber Green', 20499, 22999, 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?q=80&w=500&auto=format&fit=crop'],
-  ['Roadster Men Printed T-shirt', 575, 1999, 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=500&auto=format&fit=crop'],
-  ['Women Embroidered Shirt', 330, 1499, 'https://images.unsplash.com/photo-1608234808654-2a8875faa7fd?q=80&w=500&auto=format&fit=crop'],
-  ['Apple iPad 128 GB ROM', 34890, 49900, 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=500&auto=format&fit=crop'],
-  ['Mens Cargo Style Pants', 686, 1990, 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=500&auto=format&fit=crop'],
-  ['Women Regular Fit Striped Shirt', 338, 449, 'https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?q=80&w=500&auto=format&fit=crop'],
-  ['Mini Jungle Animals Toy Set', 118, 999, 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=500&auto=format&fit=crop'],
-  ['Foldable Storage Rack', 299, 999, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=500&auto=format&fit=crop'],
-  ['Shop Now Black Dress', 699, 1999, 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?q=80&w=500&auto=format&fit=crop'],
-  ['Realme Buds Wireless', 599, 1999, 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=500&auto=format&fit=crop'],
-  ['Vegetable Chopper', 785, 1499, 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?q=80&w=500&auto=format&fit=crop'],
-  ['Wooden Alphabet Toy', 262, 999, 'https://images.unsplash.com/photo-1604881991720-f91add269bed?q=80&w=500&auto=format&fit=crop'],
-  ['Hand Fan Rechargeable', 188, 799, 'https://images.unsplash.com/photo-1620297949358-4d130a96b721?q=80&w=500&auto=format&fit=crop'],
-  ['Trendy Sling Bag', 298, 999, 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=500&auto=format&fit=crop'],
-  ['Racket Set for Kids', 308, 999, 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=500&auto=format&fit=crop']
-].map(([name, price, mrp, image_url], index) => ({
+  ['KOTTY Women Regular Fit Black Trousers', 297, 1999, 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=500&auto=format&fit=crop', 19],
+  ['Ankit fashion Women Straight Pants', 350, 1999, 'https://images.unsplash.com/photo-1509551388413-e18d0ac5d495?q=80&w=500&auto=format&fit=crop', 19],
+  ['KOTTY Women Regular Fit Beige Trousers', 362, 1999, 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?q=80&w=500&auto=format&fit=crop', 19],
+  ['NEYS A Women Regular Fit Black Pants', 362, 999, 'https://images.unsplash.com/photo-1506629905607-d405b7a30db9?q=80&w=500&auto=format&fit=crop', 19],
+  ['OPPO A6x 4G Mobile', 11589, 12999, 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=500&auto=format&fit=crop', 30],
+  ['Vivo T5x 5G Cyber Green', 20499, 22999, 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?q=80&w=500&auto=format&fit=crop', 15],
+  ['Roadster Men Printed T-shirt', 575, 1999, 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=500&auto=format&fit=crop', 6],
+  ['Women Embroidered Shirt', 330, 1499, 'https://images.unsplash.com/photo-1608234808654-2a8875faa7fd?q=80&w=500&auto=format&fit=crop', 6],
+  ['Apple iPad 128 GB ROM', 34890, 49900, 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=500&auto=format&fit=crop', 4],
+  ['Mens Cargo Style Pants', 686, 1990, 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=500&auto=format&fit=crop', 19],
+  ['Women Regular Fit Striped Shirt', 338, 449, 'https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?q=80&w=500&auto=format&fit=crop', 6],
+  ['Mini Jungle Animals Toy Set', 118, 999, 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=500&auto=format&fit=crop', 17],
+  ['Foldable Storage Rack', 299, 999, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=500&auto=format&fit=crop', 23],
+  ['Shop Now Black Dress', 699, 1999, 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?q=80&w=500&auto=format&fit=crop', 21],
+  ['Realme Buds Wireless', 599, 1999, 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=500&auto=format&fit=crop', 17],
+  ['Vegetable Chopper', 785, 1499, 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?q=80&w=500&auto=format&fit=crop', 25],
+  ['Wooden Alphabet Toy', 262, 999, 'https://images.unsplash.com/photo-1604881991720-f91add269bed?q=80&w=500&auto=format&fit=crop', 23],
+  ['Hand Fan Rechargeable', 188, 799, 'https://images.unsplash.com/photo-1620297949358-4d130a96b721?q=80&w=500&auto=format&fit=crop', 26],
+  ['Trendy Sling Bag', 298, 999, 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=500&auto=format&fit=crop', 21],
+  ['Racket Set for Kids', 308, 999, 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?q=80&w=500&auto=format&fit=crop', 7]
+].map(([name, price, mrp, image_url, product_id], index) => ({
   id: `fallback-${index}`,
+  product_id,
   name,
   price,
   mrp,
@@ -63,6 +64,8 @@ const brandCards = [
   ['Biggest price drop', 'Up to 90% Off', 'https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?q=80&w=400&auto=format&fit=crop']
 ].map(([title, offer, image]) => ({ title, offer, image }));
 
+const text = (value) => String(value || '').trim().toLowerCase();
+
 const categoryPages = {
   Mobiles: {
     hero: [
@@ -72,10 +75,10 @@ const categoryPages = {
     ],
     shortcuts: ['iPhone', 'vivo', 'realme', 'POCO', 'Alt+', 'Google', 'Tecno', 'HMD', 'motorola', 'Samsung', 'OPPO', 'Nothing'],
     products: [
-      ['OPPO A6x 4G', 11589, 12999, 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=500&auto=format&fit=crop'],
-      ['G Five A99 Mini Keypad', 845, 999, 'https://images.unsplash.com/photo-1601972599720-36938d4ecd31?q=80&w=500&auto=format&fit=crop'],
-      ['vivo T5x 5G', 20499, 22999, 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?q=80&w=500&auto=format&fit=crop'],
-      ['realme C67 5G', 16190, 16999, 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500&auto=format&fit=crop']
+      ['OPPO A6x 4G', 11589, 12999, 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=500&auto=format&fit=crop', 30],
+      ['G Five A99 Mini Keypad', 845, 999, 'https://images.unsplash.com/photo-1601972599720-36938d4ecd31?q=80&w=500&auto=format&fit=crop', 3],
+      ['vivo T5x 5G', 20499, 22999, 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?q=80&w=500&auto=format&fit=crop', 15],
+      ['realme C67 5G', 16190, 16999, 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500&auto=format&fit=crop', 30]
     ]
   },
   Beauty: {
@@ -86,10 +89,10 @@ const categoryPages = {
     ],
     shortcuts: ['Skincare', 'Afnan', 'Hair care', 'Top 25 deals', 'Makeup', 'Grooming', 'Fragrances', 'Premium', 'Personal care', 'Derma'],
     products: [
-      ['Olay Serum', 799, 1599, 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=500&auto=format&fit=crop'],
-      ['Dot & Key Sunscreen', 349, 599, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?q=80&w=500&auto=format&fit=crop'],
-      ['Maybelline Foundation', 499, 799, 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=500&auto=format&fit=crop'],
-      ['Ponds Hydra Cream', 299, 499, 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?q=80&w=500&auto=format&fit=crop']
+      ['Olay Serum', 799, 1599, 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=500&auto=format&fit=crop', 28],
+      ['Dot & Key Sunscreen', 349, 599, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?q=80&w=500&auto=format&fit=crop', 28],
+      ['Maybelline Foundation', 499, 799, 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=500&auto=format&fit=crop', 28],
+      ['Ponds Hydra Cream', 299, 499, 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?q=80&w=500&auto=format&fit=crop', 28]
     ]
   },
   Home: {
@@ -100,10 +103,10 @@ const categoryPages = {
     ],
     shortcuts: ['Cookware', 'Lighting', 'Containers', 'Drinkware', 'Bathroom', 'Mattress', 'Wallpaper', 'Furnishing', 'Hardware', 'Covers', 'Decor', 'Bedsheets'],
     products: [
-      ['Cookware Set', 799, 1999, 'https://images.unsplash.com/photo-1556911220-bff31c812dba?q=80&w=500&auto=format&fit=crop'],
-      ['Designer Lamp', 499, 1499, 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?q=80&w=500&auto=format&fit=crop'],
-      ['Storage Containers', 299, 999, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=500&auto=format&fit=crop'],
-      ['Sofa Furnishing', 1299, 3999, 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=500&auto=format&fit=crop']
+      ['Cookware Set', 799, 1999, 'https://images.unsplash.com/photo-1556911220-bff31c812dba?q=80&w=500&auto=format&fit=crop', 25],
+      ['Designer Lamp', 499, 1499, 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?q=80&w=500&auto=format&fit=crop', 23],
+      ['Storage Containers', 299, 999, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=500&auto=format&fit=crop', 23],
+      ['Sofa Furnishing', 1299, 3999, 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=500&auto=format&fit=crop', 8]
     ]
   },
   Fashion: {
@@ -113,7 +116,7 @@ const categoryPages = {
       ['Spring picks', 'Fresh styles', 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=900&auto=format&fit=crop']
     ],
     shortcuts: ['College Ready', 'Tshirts', 'Jeans', 'Kurta Sets', 'Formal Wear', 'Sunglasses', 'Backpacks', 'Kids clothing', 'Sneakers', 'Watches'],
-    products: fallbackProducts.slice(0, 12).map((item) => [item.name, item.price, item.mrp, item.image_url])
+    products: fallbackProducts.slice(0, 12).map((item) => [item.name, item.price, item.mrp, item.image_url, item.product_id])
   }
 };
 
@@ -151,8 +154,9 @@ const Home = () => {
 
   const productFeed = useMemo(() => {
     const real = products.map((item) => ({ ...item, id: Number(item.id) }));
-    const fallbackList = pageConfig.products.map(([name, price, mrp, image_url], index) => ({
+    const fallbackList = pageConfig.products.map(([name, price, mrp, image_url, product_id], index) => ({
       id: `${selectedCategory || 'for-you'}-${index}`,
+      product_id,
       name,
       price,
       mrp,
@@ -166,15 +170,21 @@ const Home = () => {
   }, [products, pageConfig, selectedCategory]);
 
   const openProduct = (item) => {
-    const id = Number(item?.id);
-    const hasRealId = Number.isInteger(id) && String(item?.id) === String(id);
+    const productId = Number(item?.product_id || item?.id);
+    const hasRealId = Number.isInteger(productId) && productId > 0;
 
     if (hasRealId) {
-      navigate(`/product/${id}`);
+      navigate(`/product/${productId}`);
       return;
     }
 
-    if (item?.name) navigate(`/?search=${encodeURIComponent(item.name)}`);
+    const localMatch = products.find((product) => text(product.name) === text(item?.name));
+    if (localMatch?.id) {
+      navigate(`/product/${localMatch.id}`);
+      return;
+    }
+
+    if (!item?.name) return;
   };
 
   const ProductTile = ({ item, tall = false }) => (

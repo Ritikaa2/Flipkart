@@ -64,22 +64,7 @@ const menuGroups = [
 ];
 
 const defaults = {
-  addresses: [
-    {
-      id: 1,
-      name: 'Balmukand Sharma',
-      phone: '8708755231',
-      pincode: '125055',
-      address: 'House no 337, Dhani Bilaspur, Village Dhanoor, Near Manoj Brick Kilns, E Block, Janta Bhawan Road, Sirsa, Haryana'
-    },
-    {
-      id: 2,
-      name: 'Ritika',
-      phone: '9115854998',
-      pincode: '144401',
-      address: 'Near Nanaksar Gurudwara, Nangal Majha, Phagwara, Punjab, Near Gurudwara Nanaksar Saheb, Kapurthala, Punjab'
-    }
-  ],
+  addresses: [],
   upis: [{ id: 1, value: 'balmukand@upi', primary: true }],
   cards: [{ id: 1, bank: 'HDFC Bank', last4: '4242', type: 'Visa', tokenised: true }],
   giftCards: [],
@@ -109,11 +94,11 @@ const AccountPage = () => {
   const { user } = useAuth();
   const page = sections[section];
 
-  const [profile, setProfile] = useState(() => readStore('fk_profile', {
-    name: user?.name || 'Balmukand Sharma',
-    email: user?.email || 'balmukand@example.com',
-    phone: user?.phone || '8708755231'
-  }));
+  const profile = useMemo(() => ({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || ''
+  }), [user]);
   const [addresses, setAddresses] = useState(() => readStore('fk_addresses', defaults.addresses));
   const [upis, setUpis] = useState(() => readStore('fk_upis', defaults.upis));
   const [cards, setCards] = useState(() => readStore('fk_cards', defaults.cards));
@@ -129,7 +114,6 @@ const AccountPage = () => {
   const [giftQrOpen, setGiftQrOpen] = useState(false);
   const [message, setMessage] = useState('');
 
-  useEffect(() => localStorage.setItem('fk_profile', JSON.stringify(profile)), [profile]);
   useEffect(() => localStorage.setItem('fk_addresses', JSON.stringify(addresses)), [addresses]);
   useEffect(() => localStorage.setItem('fk_upis', JSON.stringify(upis)), [upis]);
   useEffect(() => localStorage.setItem('fk_cards', JSON.stringify(cards)), [cards]);
@@ -183,12 +167,12 @@ const AccountPage = () => {
     if (section === 'profile') {
       return (
         <div className="fk-profile-grid">
-          <form className="fk-profile-card" onSubmit={(e) => { e.preventDefault(); flash('Profile updated successfully.'); }}>
-            <div className="fk-section-head"><h2>Personal Information</h2><button type="submit">Save</button></div>
+          <form className="fk-profile-card" onSubmit={(e) => e.preventDefault()}>
+            <div className="fk-section-head"><h2>Personal Information</h2></div>
             {['name', 'email', 'phone'].map((field) => (
               <div className="fk-form-row" key={field}>
                 <label>{field === 'name' ? 'Full name' : field === 'email' ? 'Email address' : 'Mobile number'}</label>
-                <input value={profile[field]} onChange={(e) => setProfile({ ...profile, [field]: e.target.value })} />
+                <input value={profile[field] || ''} readOnly />
               </div>
             ))}
           </form>
@@ -198,7 +182,7 @@ const AccountPage = () => {
             <div className="fk-form-row"><label>New password</label><input type="password" required minLength={6} /></div>
             <button type="submit" className="fk-primary-button">Save Password</button>
           </form>
-          <div className="fk-profile-help"><ShieldCheck size={22} /><div><h3>Account security</h3><p>Your profile changes are saved on this device for faster checkout and account pages.</p></div></div>
+          <div className="fk-profile-help"><ShieldCheck size={22} /><div><h3>Account security</h3><p>This information comes from the account you registered or logged in with.</p></div></div>
         </div>
       );
     }

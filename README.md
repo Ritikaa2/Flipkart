@@ -53,7 +53,7 @@ Example:
 
 📸 **Add Cart Screenshot Here**
 ```md
-![Cart Page](./screenshots/cart.png)
+![Cart Page](./screenshots/Cart.png)
 ```
 
 ---

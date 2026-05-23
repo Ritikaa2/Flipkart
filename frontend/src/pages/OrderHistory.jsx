@@ -16,6 +16,7 @@ const OrderHistory = () => {
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelMessage, setCancelMessage] = useState('');
   const navigate = useNavigate();
+  const orderNumber = (order) => order.order_number || `FK-${order.id}`;
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -71,7 +72,7 @@ const OrderHistory = () => {
   }), [orders, itemsMap]);
 
   const visibleOrders = decoratedOrders.filter((order) => {
-    const text = `${order.id} ${order.shipping_name} ${order.firstItem?.name || ''}`.toLowerCase();
+    const text = `${order.id} ${orderNumber(order)} ${order.shipping_name} ${order.firstItem?.name || ''}`.toLowerCase();
     const matchesQuery = text.includes(query.toLowerCase());
     const matchesStatus = statusFilter === 'All' || order.status === statusFilter;
     return matchesQuery && matchesStatus;
@@ -122,7 +123,7 @@ const OrderHistory = () => {
 
     return (
       <div className="fk-order-detail-page">
-        <div className="fk-order-breadcrumb">Home &gt; My Account &gt; My Orders &gt; OD{String(selectedOrder.id).padStart(16, '0')}</div>
+        <div className="fk-order-breadcrumb">Home &gt; My Account &gt; My Orders &gt; {orderNumber(selectedOrder)}</div>
         <button className="fk-order-back" onClick={() => setSelectedOrderId(null)}><ArrowLeft size={16} /> Back to orders</button>
         <section className="fk-order-detail-layout">
           <main>
@@ -180,7 +181,7 @@ const OrderHistory = () => {
               {showAllUpdates && (
                 <div className="fk-extra-updates">
                   <p><b>Payment successful</b><span>{selectedOrder.payment_method} payment completed for Rs. {amount.toLocaleString()}.</span></p>
-                  <p><b>Order created</b><span>Order #OD{String(selectedOrder.id).padStart(16, '0')} added to your account.</span></p>
+                  <p><b>Order created</b><span>Order #{orderNumber(selectedOrder)} added to your account.</span></p>
                   <p><b>{isCancelled ? 'Refund update' : 'Delivery update'}</b><span>{isCancelled ? `${refundStatus}. Refund will be credited to ${selectedOrder.payment_method || 'your payment account'}.` : 'Delivery partner will be assigned after packing is completed.'}</span></p>
                 </div>
               )}
@@ -206,7 +207,7 @@ const OrderHistory = () => {
                 <button type="button">Raise Support Ticket</button>
               </div>
             )}
-            <div className="fk-order-id-strip">Order #OD{String(selectedOrder.id).padStart(16, '0')} <Copy size={14} /></div>
+            <div className="fk-order-id-strip">Order #{orderNumber(selectedOrder)} <Copy size={14} /></div>
           </main>
 
           <aside>
@@ -292,7 +293,7 @@ const OrderHistory = () => {
                 <div className="fk-order-copy">
                   <h3>{order.firstItem?.name || `Order #${order.id}`}</h3>
                   <p>Color: {order.firstItem?.color || 'Black'}</p>
-                  <small>OD{String(order.id).padStart(16, '0')}</small>
+                  <small>{orderNumber(order)}</small>
                 </div>
                 <strong className="fk-order-price">Rs. {parseInt(order.final_amount || 0).toLocaleString()}</strong>
                 <aside className="fk-order-status">

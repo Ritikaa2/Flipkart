@@ -5,7 +5,14 @@ const seedData = {
     { id: 3, name: "Fashion", image_url: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=200&auto=format&fit=crop" },
     { id: 4, name: "Furniture", image_url: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=200&auto=format&fit=crop" },
     { id: 5, name: "Appliances", image_url: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=200&auto=format&fit=crop" },
-    { id: 6, name: "Grocery", image_url: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=200&auto=format&fit=crop" }
+    { id: 6, name: "Grocery", image_url: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=200&auto=format&fit=crop" },
+    { id: 7, name: "Beauty", image_url: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=200&auto=format&fit=crop" },
+    { id: 8, name: "Home", image_url: "https://images.unsplash.com/photo-1556911220-bff31c812dba?q=80&w=200&auto=format&fit=crop" },
+    { id: 9, name: "Toys", image_url: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=200&auto=format&fit=crop" },
+    { id: 10, name: "Auto", image_url: "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=200&auto=format&fit=crop" },
+    { id: 11, name: "Two Wheelers", image_url: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=200&auto=format&fit=crop" },
+    { id: 12, name: "Sports", image_url: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=200&auto=format&fit=crop" },
+    { id: 13, name: "Books", image_url: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=200&auto=format&fit=crop" }
   ],
   products: [
     // --- MOBILES (Category 1) ---
@@ -753,6 +760,342 @@ const seedData = {
       images: [
         "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=600&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1598965402089-897ce52e8355?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 31,
+      category_id: 7,
+      name: "Lakme Absolute Matte Melt Liquid Lip Color",
+      price: 499.00,
+      mrp: 800.00,
+      rating: 4.2,
+      rating_count: 18420,
+      review_count: 1390,
+      description: "A lightweight matte lip color with rich pigment, comfortable wear, and a smooth finish for office, college, parties, and everyday touch-ups.",
+      stock: 140,
+      specifications: {
+        "Brand": "Lakme",
+        "Type": "Liquid Lipstick",
+        "Finish": "Matte",
+        "Shade": "Red Smoke",
+        "Quantity": "6 ml",
+        "Ideal For": "Women"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 32,
+      category_id: 7,
+      name: "Minimalist SPF 50 PA++++ Sunscreen Cream",
+      price: 399.00,
+      mrp: 599.00,
+      rating: 4.4,
+      rating_count: 28610,
+      review_count: 2415,
+      description: "A daily sunscreen with high UV protection, lightweight texture, and a non-sticky feel that suits regular outdoor and commute use.",
+      stock: 210,
+      specifications: {
+        "Brand": "Minimalist",
+        "SPF": "50 PA++++",
+        "Skin Type": "All Skin Types",
+        "Quantity": "50 g",
+        "Form": "Cream",
+        "Paraben Free": "Yes"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1556228578-8c89e6adf883?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 33,
+      category_id: 8,
+      name: "Prestige Omega Deluxe Granite Non-Stick Cookware Set",
+      price: 2199.00,
+      mrp: 4495.00,
+      rating: 4.3,
+      rating_count: 12340,
+      review_count: 980,
+      description: "A practical cookware set with non-stick coating, sturdy handles, and everyday pans for breakfast, curries, snacks, and quick family cooking.",
+      stock: 82,
+      specifications: {
+        "Brand": "Prestige",
+        "Material": "Aluminium",
+        "Coating": "Non-Stick Granite",
+        "Pieces": "3",
+        "Induction Bottom": "Yes",
+        "Dishwasher Safe": "Yes"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1556911220-bff31c812dba?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1584990347449-a6d82bde2a9e?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 34,
+      category_id: 8,
+      name: "Solimo Microfiber Double Bedsheet with 2 Pillow Covers",
+      price: 549.00,
+      mrp: 1499.00,
+      rating: 4.1,
+      rating_count: 21460,
+      review_count: 1622,
+      description: "A soft printed bedsheet set with easy-care microfiber fabric, neat stitching, and a fresh pattern for regular bedroom use.",
+      stock: 155,
+      specifications: {
+        "Brand": "Solimo",
+        "Size": "Double",
+        "Material": "Microfiber",
+        "Thread Count": "144",
+        "Set Contents": "1 Bedsheet, 2 Pillow Covers",
+        "Machine Washable": "Yes"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1616627451515-cbc80e9ece35?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 35,
+      category_id: 9,
+      name: "LEGO Classic Creative Bricks Building Set",
+      price: 1899.00,
+      mrp: 2499.00,
+      rating: 4.7,
+      rating_count: 9680,
+      review_count: 840,
+      description: "A colorful building set that encourages creative play, problem solving, and open-ended construction for kids and family activity time.",
+      stock: 64,
+      specifications: {
+        "Brand": "LEGO",
+        "Type": "Building Blocks",
+        "Age Group": "4+ Years",
+        "Material": "Plastic",
+        "Pieces": "484",
+        "Battery Required": "No"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1587654780291-39c9404d746b?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 36,
+      category_id: 9,
+      name: "Hot Wheels 5-Car Gift Pack",
+      price: 549.00,
+      mrp: 799.00,
+      rating: 4.5,
+      rating_count: 15120,
+      review_count: 1112,
+      description: "A collectible toy car pack with bright designs, smooth rolling wheels, and durable build for racing, pretend play, and gifting.",
+      stock: 132,
+      specifications: {
+        "Brand": "Hot Wheels",
+        "Type": "Toy Cars",
+        "Age Group": "3+ Years",
+        "Pack Of": "5",
+        "Material": "Die-Cast Metal",
+        "Battery Required": "No"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 37,
+      category_id: 10,
+      name: "Bosch Car Vacuum Cleaner with HEPA Filter",
+      price: 2499.00,
+      mrp: 3999.00,
+      rating: 4.2,
+      rating_count: 7210,
+      review_count: 566,
+      description: "A compact car vacuum cleaner for seats, mats, boot spaces, and small dust pockets, with attachments that help reach narrow corners.",
+      stock: 48,
+      specifications: {
+        "Brand": "Bosch",
+        "Type": "Car Vacuum",
+        "Power": "150 W",
+        "Filter": "HEPA",
+        "Cord Length": "4 m",
+        "Warranty": "1 Year"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 38,
+      category_id: 10,
+      name: "Bergmann Typhoon Digital Tyre Inflator",
+      price: 1899.00,
+      mrp: 2999.00,
+      rating: 4.4,
+      rating_count: 10450,
+      review_count: 880,
+      description: "A portable digital inflator with auto cut-off, pressure display, and emergency light for cars, bikes, footballs, and travel kits.",
+      stock: 58,
+      specifications: {
+        "Brand": "Bergmann",
+        "Type": "Tyre Inflator",
+        "Display": "Digital",
+        "Auto Cut-Off": "Yes",
+        "Power Source": "12V DC",
+        "Max Pressure": "150 PSI"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 39,
+      category_id: 11,
+      name: "Vega Bolt Bunny ISI Certified Full Face Helmet",
+      price: 1499.00,
+      mrp: 1998.00,
+      rating: 4.3,
+      rating_count: 18990,
+      review_count: 1456,
+      description: "A full-face helmet with clear visor, comfortable padding, secure strap, and ISI certification for daily two-wheeler rides.",
+      stock: 96,
+      specifications: {
+        "Brand": "Vega",
+        "Type": "Full Face Helmet",
+        "Certification": "ISI",
+        "Visor": "Clear",
+        "Size": "M",
+        "Ideal For": "Men and Women"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1558981359-219d6364c9c8?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 40,
+      category_id: 11,
+      name: "Steelbird Two Wheeler Riding Gloves",
+      price: 699.00,
+      mrp: 1299.00,
+      rating: 4.1,
+      rating_count: 6420,
+      review_count: 410,
+      description: "Comfortable riding gloves with padded palm, breathable fabric, and firm grip for city rides, weekend trips, and scooter commutes.",
+      stock: 125,
+      specifications: {
+        "Brand": "Steelbird",
+        "Type": "Riding Gloves",
+        "Material": "Synthetic Leather",
+        "Size": "L",
+        "Grip": "Anti-Slip",
+        "Washable": "Yes"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1611241443322-78c9a3ffbd3c?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 41,
+      category_id: 12,
+      name: "Yonex Nanoray Light 18i Badminton Racquet",
+      price: 1699.00,
+      mrp: 2790.00,
+      rating: 4.4,
+      rating_count: 17450,
+      review_count: 1320,
+      description: "A lightweight badminton racquet with quick swing speed, comfortable grip, and balanced control for beginners and regular players.",
+      stock: 73,
+      specifications: {
+        "Brand": "Yonex",
+        "Sport": "Badminton",
+        "Weight": "77 g",
+        "Grip Size": "G4",
+        "Material": "Graphite",
+        "Cover": "Full Cover"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1613918431703-aa50889e3be1?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 42,
+      category_id: 12,
+      name: "Nivia Storm Football Size 5",
+      price: 599.00,
+      mrp: 999.00,
+      rating: 4.2,
+      rating_count: 13880,
+      review_count: 1042,
+      description: "A durable size 5 football with machine-stitched panels, strong bounce, and reliable grip for turf, ground, and school play.",
+      stock: 116,
+      specifications: {
+        "Brand": "Nivia",
+        "Sport": "Football",
+        "Size": "5",
+        "Material": "PVC",
+        "Stitching": "Machine Stitched",
+        "Ideal For": "Training"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1551958219-acbc608c6377?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 43,
+      category_id: 13,
+      name: "Atomic Habits by James Clear Paperback",
+      price: 399.00,
+      mrp: 799.00,
+      rating: 4.6,
+      rating_count: 53120,
+      review_count: 4960,
+      description: "A popular self-improvement book about building better habits through small systems, practical routines, and clear behavior cues.",
+      stock: 190,
+      specifications: {
+        "Author": "James Clear",
+        "Language": "English",
+        "Binding": "Paperback",
+        "Genre": "Self Help",
+        "Pages": "320",
+        "Publisher": "Random House"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=600&auto=format&fit=crop"
+      ]
+    },
+    {
+      id: 44,
+      category_id: 13,
+      name: "Classmate Long Notebook Pack of 6",
+      price: 279.00,
+      mrp: 360.00,
+      rating: 4.5,
+      rating_count: 24680,
+      review_count: 1880,
+      description: "A pack of ruled long notebooks with smooth paper, strong binding, and enough pages for school, college, office, and exam notes.",
+      stock: 240,
+      specifications: {
+        "Brand": "Classmate",
+        "Type": "Notebook",
+        "Pages": "172 Each",
+        "Ruling": "Single Line",
+        "Pack Of": "6",
+        "Paper Size": "Long"
+      },
+      images: [
+        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1456324504439-367cee3b3c32?q=80&w=600&auto=format&fit=crop"
       ]
     }
   ]

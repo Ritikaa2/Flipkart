@@ -51,7 +51,54 @@ function initMockDb() {
 
     fs.writeFileSync(mockDbPath, JSON.stringify(dbState, null, 2), 'utf8');
     console.log("Mock database initialized successfully in JSON format at " + mockDbPath);
+  } else {
+    syncMockSeed();
   }
+}
+
+function syncMockSeed() {
+  const seedData = require('../db/seedData');
+  let state;
+  try {
+    state = JSON.parse(fs.readFileSync(mockDbPath, 'utf8'));
+  } catch {
+    return;
+  }
+
+  state.categories = state.categories || [];
+  state.products = state.products || [];
+  state.product_images = state.product_images || [];
+  state.orders = (state.orders || []).map((order) => ({
+    ...order,
+    order_number: order.order_number || `FK-${order.id}`
+  }));
+
+  const categoryIds = new Set(state.categories.map((category) => Number(category.id)));
+  seedData.categories.forEach((category) => {
+    if (!categoryIds.has(Number(category.id))) state.categories.push(category);
+  });
+
+  const productIds = new Set(state.products.map((product) => Number(product.id)));
+  seedData.products.forEach((product) => {
+    if (productIds.has(Number(product.id))) return;
+    const { images, ...productWithoutImages } = product;
+    state.products.push(productWithoutImages);
+
+    const nextImageId = () => state.product_images.length > 0
+      ? Math.max(...state.product_images.map((image) => Number(image.id) || 0)) + 1
+      : 1;
+
+    (images || []).forEach((imageUrl, index) => {
+      state.product_images.push({
+        id: nextImageId(),
+        product_id: product.id,
+        image_url: imageUrl,
+        is_primary: index === 0 ? 1 : 0
+      });
+    });
+  });
+
+  writeMockDb(state);
 }
 
 // Load current mock DB state
@@ -95,9 +142,11 @@ async function initDatabase() {
     connection.release();
     try {
       await pool.query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_status VARCHAR(50) DEFAULT 'Placed'");
+      await pool.query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_number VARCHAR(32) UNIQUE");
       await pool.query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS refund_status VARCHAR(50) DEFAULT 'Not requested'");
       await pool.query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS cancel_reason VARCHAR(255)");
       await pool.query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS cancelled_at TIMESTAMP NULL");
+      await syncSeedToMySQL();
     } catch (schemaErr) {
       console.warn("Order lifecycle columns could not be auto-created:", schemaErr.message);
     }
@@ -111,6 +160,49 @@ async function initDatabase() {
     console.warn("==========================================================================");
     isFallback = true;
     initMockDb();
+  }
+}
+
+async function syncSeedToMySQL() {
+  const seedData = require('../db/seedData');
+
+  for (const category of seedData.categories) {
+    await pool.query(
+      "INSERT IGNORE INTO categories (id, name, image_url) VALUES (?, ?, ?)",
+      [category.id, category.name, category.image_url]
+    );
+  }
+
+  for (const product of seedData.products) {
+    const [existingProducts] = await pool.query("SELECT id FROM products WHERE id = ?", [product.id]);
+    if (!existingProducts.length) {
+      await pool.query(
+        "INSERT INTO products (id, category_id, name, price, mrp, rating, rating_count, review_count, description, specifications, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+          product.id,
+          product.category_id,
+          product.name,
+          product.price,
+          product.mrp,
+          product.rating,
+          product.rating_count,
+          product.review_count,
+          product.description,
+          JSON.stringify(product.specifications),
+          product.stock
+        ]
+      );
+    }
+
+    const [existingImages] = await pool.query("SELECT id FROM product_images WHERE product_id = ?", [product.id]);
+    if (!existingImages.length) {
+      for (let index = 0; index < (product.images || []).length; index++) {
+        await pool.query(
+          "INSERT INTO product_images (product_id, image_url, is_primary) VALUES (?, ?, ?)",
+          [product.id, product.images[index], index === 0 ? 1 : 0]
+        );
+      }
+    }
   }
 }
 
@@ -317,16 +409,17 @@ function executeMockQuery(sql, params = []) {
     const id = state.orders.length > 0 ? Math.max(...state.orders.map(o => o.id)) + 1 : 1;
     const newOrder = {
       id,
-      user_id: parseInt(params[0]),
-      total_mrp: parseFloat(params[1]),
-      total_discount: parseFloat(params[2]),
-      delivery_charges: parseFloat(params[3]),
-      final_amount: parseFloat(params[4]),
-      shipping_name: params[5],
-      shipping_phone: params[6],
-      shipping_address: params[7],
-      payment_status: params[8] || 'Paid',
-      payment_method: params[9] || 'Card',
+      order_number: params.length === 11 ? params[0] : `FK-${id}`,
+      user_id: parseInt(params.length === 11 ? params[1] : params[0]),
+      total_mrp: parseFloat(params.length === 11 ? params[2] : params[1]),
+      total_discount: parseFloat(params.length === 11 ? params[3] : params[2]),
+      delivery_charges: parseFloat(params.length === 11 ? params[4] : params[3]),
+      final_amount: parseFloat(params.length === 11 ? params[5] : params[4]),
+      shipping_name: params.length === 11 ? params[6] : params[5],
+      shipping_phone: params.length === 11 ? params[7] : params[6],
+      shipping_address: params.length === 11 ? params[8] : params[7],
+      payment_status: (params.length === 11 ? params[9] : params[8]) || 'Paid',
+      payment_method: (params.length === 11 ? params[10] : params[9]) || 'Card',
       order_status: 'Placed',
       refund_status: 'Not requested',
       cancel_reason: null,

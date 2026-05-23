@@ -4,11 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { requestFirebaseNotificationToken } from '../services/firebase';
-import { Check, ShieldCheck, CreditCard, Lock, QrCode, RefreshCw, Smartphone } from 'lucide-react';
+import { Check, ShieldCheck, CreditCard, Lock, QrCode, RefreshCw, Smartphone, Trash2 } from 'lucide-react';
 
 const Checkout = () => {
   const { user } = useAuth();
-  const { cartItems, totalItems, totalMrp, totalDiscount, finalAmount, clearCart } = useCart();
+  const { cartItems, totalItems, totalMrp, totalDiscount, finalAmount, clearCart, removeFromCart } = useCart();
   const navigate = useNavigate();
 
   // Redirect if cart is empty
@@ -72,6 +72,10 @@ const Checkout = () => {
     setState(address.state || '');
   };
 
+  const handleRemoveSummaryItem = async (itemId) => {
+    await removeFromCart(itemId);
+  };
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setPaymentError('');
@@ -115,10 +119,11 @@ const Checkout = () => {
         };
 
         const response = await api.post('/orders', orderData);
-        const { orderId } = response.data;
+        const { orderId, orderNumber } = response.data;
         
         // Success: cache details, clean local cart, route to Success
         localStorage.setItem('lastPlacedOrderId', orderId);
+        localStorage.setItem('lastPlacedOrderNumber', orderNumber || `FK-${orderId}`);
         localStorage.setItem('lastPlacedOrderAmount', finalAmount);
         localStorage.setItem('lastOrderFirebaseSent', response.data.firebaseNotificationSent ? 'true' : 'false');
         localStorage.setItem('lastOrderFirebaseFallback', response.data.firebaseNotificationFallback ? 'true' : 'false');
@@ -198,8 +203,9 @@ const Checkout = () => {
       }))
     });
 
-    const { orderId } = response.data;
+    const { orderId, orderNumber } = response.data;
     localStorage.setItem('lastPlacedOrderId', orderId);
+    localStorage.setItem('lastPlacedOrderNumber', orderNumber || `FK-${orderId}`);
     localStorage.setItem('lastPlacedOrderAmount', finalAmount);
     localStorage.setItem('lastOrderFirebaseSent', response.data.firebaseNotificationSent ? 'true' : 'false');
     localStorage.setItem('lastOrderFirebaseFallback', response.data.firebaseNotificationFallback ? 'true' : 'false');
@@ -501,9 +507,18 @@ const Checkout = () => {
                             <div className="summary-delivery-line">EXPRESS Delivery in 2 days, Sat</div>
                             {/* <label><input type="checkbox" /> Use GST Invoice</label> */}
                           </div>
-                          <select defaultValue={item.quantity}>
-                            {[1, 2, 3, 4, 5].map((qty) => <option key={qty} value={qty}>Qty: {qty}</option>)}
-                          </select>
+                          <div className="summary-product-actions">
+                            <select defaultValue={item.quantity}>
+                              {[1, 2, 3, 4, 5].map((qty) => <option key={qty} value={qty}>Qty: {qty}</option>)}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSummaryItem(item.id)}
+                              className="summary-remove-button"
+                            >
+                              <Trash2 size={14} /> Remove
+                            </button>
+                          </div>
                         </article>
                       );
                     })}

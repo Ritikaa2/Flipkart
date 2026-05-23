@@ -65,6 +65,22 @@ const brandCards = [
 ].map(([title, offer, image]) => ({ title, offer, image }));
 
 const text = (value) => String(value || '').trim().toLowerCase();
+const categoryAliases = {
+  'mobiles & accessories': 'mobiles',
+  'home & furniture': 'furniture',
+  toys: 'toys',
+  auto: 'auto',
+  'two wheelers': 'two wheelers',
+  sports: 'sports'
+};
+
+const normalizedCategory = (value) => categoryAliases[text(value)] || text(value);
+const cardImage = (item) => {
+  const gallery = [item?.image_url, ...(item?.images || [])].filter(Boolean);
+  const uniqueGallery = [...new Set(gallery)];
+  if (!uniqueGallery.length) return '/favicon.svg';
+  return uniqueGallery[Math.abs(Number(item?.id || item?.product_id || 0)) % uniqueGallery.length];
+};
 
 const categoryPages = {
   Mobiles: {
@@ -117,11 +133,110 @@ const categoryPages = {
     ],
     shortcuts: ['College Ready', 'Tshirts', 'Jeans', 'Kurta Sets', 'Formal Wear', 'Sunglasses', 'Backpacks', 'Kids clothing', 'Sneakers', 'Watches'],
     products: fallbackProducts.slice(0, 12).map((item) => [item.name, item.price, item.mrp, item.image_url, item.product_id])
+  },
+  Electronics: {
+    hero: [
+      ['Laptops & audio', 'Top tech deals', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=900&auto=format&fit=crop'],
+      ['Noise cancelling', 'From Rs. 1,299', 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=900&auto=format&fit=crop'],
+      ['Cameras & speakers', 'Save more today', 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Laptops', 'Earbuds', 'Speakers', 'Camera', 'Headphones', 'Tablets', 'Gaming', 'Storage', 'Accessories', 'Smart Watch'],
+    products: fallbackProducts.slice(8, 18).map((item) => [item.name, item.price, item.mrp, item.image_url, item.product_id])
+  },
+  Appliances: {
+    hero: [
+      ['Appliance sale', 'Up to 45% Off', 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=900&auto=format&fit=crop'],
+      ['Kitchen helpers', 'Cook smarter', 'https://images.unsplash.com/photo-1556911220-bff31c812dba?q=80&w=900&auto=format&fit=crop'],
+      ['Home cleaning', 'Cordless picks', 'https://images.unsplash.com/photo-1558317374-067fb5f30001?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Washing', 'Refrigerator', 'Air Fryer', 'Vacuum', 'Geyser', 'Mixer', 'Microwave', 'Kitchen', 'Cooling', 'Laundry'],
+    products: fallbackProducts.slice(12, 20).map((item) => [item.name, item.price, item.mrp, item.image_url, item.product_id])
+  },
+  Grocery: {
+    hero: [
+      ['Monthly staples', 'Fresh pantry deals', 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=900&auto=format&fit=crop'],
+      ['Breakfast basics', 'Everyday savings', 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=900&auto=format&fit=crop'],
+      ['Coffee & snacks', 'Stock up now', 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Atta', 'Dal', 'Oil', 'Coffee', 'Rice', 'Snacks', 'Dry Fruits', 'Spices', 'Tea', 'Breakfast'],
+    products: fallbackProducts.slice(0, 10).map((item) => [item.name, item.price, item.mrp, item.image_url, item.product_id])
+  },
+  Toys: {
+    hero: [
+      ['Creative play', 'Toys from Rs. 99', 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=900&auto=format&fit=crop'],
+      ['Building blocks', 'Learn while playing', 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?q=80&w=900&auto=format&fit=crop'],
+      ['Toy cars', 'Gift-ready picks', 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Blocks', 'Toy Cars', 'Soft Toys', 'Puzzles', 'Board Games', 'Learning', 'Remote Toys', 'Outdoor', 'Baby Toys', 'Gifts'],
+    products: [
+      ['LEGO Classic Creative Bricks', 1899, 2499, 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?q=80&w=500&auto=format&fit=crop', 35],
+      ['Hot Wheels 5-Car Gift Pack', 549, 799, 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=500&auto=format&fit=crop', 36],
+      ['Mini Jungle Animals Toy Set', 118, 999, 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?q=80&w=500&auto=format&fit=crop', 35],
+      ['Wooden Alphabet Toy', 262, 999, 'https://images.unsplash.com/photo-1604881991720-f91add269bed?q=80&w=500&auto=format&fit=crop', 36]
+    ]
+  },
+  Auto: {
+    hero: [
+      ['Car care essentials', 'Up to 55% Off', 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=900&auto=format&fit=crop'],
+      ['Emergency tools', 'Drive ready', 'https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=900&auto=format&fit=crop'],
+      ['Clean interiors', 'Daily car care', 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Vacuum', 'Inflator', 'Covers', 'Perfume', 'Cleaner', 'Tools', 'Lighting', 'Mats', 'Chargers', 'Polish'],
+    products: [
+      ['Bosch Car Vacuum Cleaner', 2499, 3999, 'https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=500&auto=format&fit=crop', 37],
+      ['Digital Tyre Inflator', 1899, 2999, 'https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=500&auto=format&fit=crop', 38]
+    ]
+  },
+  'Two Wheelers': {
+    hero: [
+      ['Ride safe', 'Helmets from Rs. 699', 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=900&auto=format&fit=crop'],
+      ['Riding gear', 'Commute ready', 'https://images.unsplash.com/photo-1558981359-219d6364c9c8?q=80&w=900&auto=format&fit=crop'],
+      ['Bike essentials', 'Daily ride picks', 'https://images.unsplash.com/photo-1611241443322-78c9a3ffbd3c?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Helmets', 'Gloves', 'Covers', 'Cleaners', 'Locks', 'Mirrors', 'Jackets', 'Rain Gear', 'Lights', 'Mobile Holder'],
+    products: [
+      ['Vega Full Face Helmet', 1499, 1998, 'https://images.unsplash.com/photo-1558981359-219d6364c9c8?q=80&w=500&auto=format&fit=crop', 39],
+      ['Steelbird Riding Gloves', 699, 1299, 'https://images.unsplash.com/photo-1611241443322-78c9a3ffbd3c?q=80&w=500&auto=format&fit=crop', 40]
+    ]
+  },
+  Sports: {
+    hero: [
+      ['Sports essentials', 'Up to 60% Off', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=900&auto=format&fit=crop'],
+      ['Badminton picks', 'Lightweight racquets', 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=900&auto=format&fit=crop'],
+      ['Football training', 'Play every day', 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Badminton', 'Football', 'Cricket', 'Fitness', 'Shoes', 'Yoga', 'Cycles', 'Swimming', 'Running', 'Outdoor'],
+    products: [
+      ['Yonex Badminton Racquet', 1699, 2790, 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=500&auto=format&fit=crop', 41],
+      ['Nivia Storm Football', 599, 999, 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=500&auto=format&fit=crop', 42]
+    ]
+  },
+  Books: {
+    hero: [
+      ['Books & stationery', 'Learning deals', 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=900&auto=format&fit=crop'],
+      ['Bestsellers', 'From Rs. 199', 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=900&auto=format&fit=crop'],
+      ['School supplies', 'Notebook packs', 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Self Help', 'Fiction', 'Notebooks', 'Exam Prep', 'Pens', 'Kids Books', 'Business', 'Comics', 'Diaries', 'Art'],
+    products: [
+      ['Atomic Habits Paperback', 399, 799, 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=500&auto=format&fit=crop', 43],
+      ['Classmate Notebook Pack', 279, 360, 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=500&auto=format&fit=crop', 44]
+    ]
+  },
+  Furniture: {
+    hero: [
+      ['Furniture deals', 'Refresh your room', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=900&auto=format&fit=crop'],
+      ['Sleep better', 'Mattress offers', 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=900&auto=format&fit=crop'],
+      ['Work from home', 'Chairs & tables', 'https://images.unsplash.com/photo-1505797149-43b0069ec26b?q=80&w=900&auto=format&fit=crop']
+    ],
+    shortcuts: ['Beds', 'Chairs', 'Mattress', 'Tables', 'Sofas', 'Storage', 'Shoe Racks', 'Wardrobes', 'TV Units', 'Decor'],
+    products: fallbackProducts.slice(12, 20).map((item) => [item.name, item.price, item.mrp, item.image_url, item.product_id])
   }
 };
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [searchMeta, setSearchMeta] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
   const location = useLocation();
@@ -140,7 +255,13 @@ const Home = () => {
     if (searchQuery) query.push(`search=${encodeURIComponent(searchQuery)}`);
     setIsLoading(true);
     api.get(`/products${query.length ? `?${query.join('&')}` : ''}`)
-      .then((res) => setProducts(res.data.products || []))
+      .then((res) => {
+        setProducts(res.data.products || []);
+        setSearchMeta({
+          suggestion: res.data.suggestion || '',
+          correctedQuery: res.data.correctedQuery || ''
+        });
+      })
       .catch((err) => console.error('Products fetch failed:', err))
       .finally(() => setIsLoading(false));
   }, [selectedCategory, searchQuery]);
@@ -190,7 +311,7 @@ const Home = () => {
   const ProductTile = ({ item, tall = false }) => (
     <button className={`fk-feed-card ${tall ? 'is-tall' : ''}`} onClick={() => openProduct(item)}>
       <div className="fk-feed-img">
-        <img src={item.image_url} alt={item.name} loading="lazy" />
+        <img src={cardImage(item)} alt={item.name} loading="lazy" />
         <span>{item.rating || 4.2} * <small>({item.rating_count || 31})</small></span>
       </div>
       <b>{item.name}</b>
@@ -205,6 +326,7 @@ const Home = () => {
     return (
       <SearchResults
         query={searchQuery}
+        meta={searchMeta}
         products={products}
         loading={isLoading}
         openProduct={openProduct}
@@ -243,7 +365,7 @@ const Home = () => {
       <section className="fk-category-tiles-row">
         {pageConfig.shortcuts.map((label, index) => (
           <button key={label}>
-            <img src={productFeed[index]?.image_url || fallbackProducts[index % fallbackProducts.length].image_url} alt={label} loading="lazy" />
+            <img src={cardImage(productFeed[index] || fallbackProducts[index % fallbackProducts.length])} alt={label} loading="lazy" />
             <span>{label}</span>
           </button>
         ))}
@@ -270,7 +392,7 @@ const Home = () => {
         <div>
           {productFeed.slice(12, 16).map((item, index) => (
             <button key={`grab-${index}-${item.id}`} onClick={() => openProduct(item)}>
-              <img src={item.image_url} alt={item.name} loading="lazy" />
+              <img src={cardImage(item)} alt={item.name} loading="lazy" />
               <span>{index === 1 ? 'Shop Now!' : item.name}</span>
               <b>{index === 2 ? 'Min 50% Off' : `From Rs. ${item.price}`}</b>
             </button>
@@ -326,7 +448,7 @@ const RowSection = ({ title, items, openProduct }) => (
     <div className="fk-real-strip">
       {items.map((item, index) => (
         <button key={`${title}-${index}-${item.id}`} onClick={() => openProduct(item)}>
-          <img src={item.image_url} alt={item.name} loading="lazy" />
+          <img src={cardImage(item)} alt={item.name} loading="lazy" />
           <span>{item.rating || 4.1} *</span>
           <b>{item.name}</b>
           <p><del>Rs. {(item.mrp || 999).toLocaleString()}</del> Rs. {(item.price || 299).toLocaleString()}</p>
@@ -337,9 +459,68 @@ const RowSection = ({ title, items, openProduct }) => (
   </section>
 );
 
-const SearchResults = ({ query, products, loading, openProduct }) => {
-  const items = products.filter((item) => item?.id);
+const SearchResults = ({ query, meta, products, loading, openProduct }) => {
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [priceFilters, setPriceFilters] = useState([]);
+  const [ratingFilters, setRatingFilters] = useState([]);
+  const [sortBy, setSortBy] = useState('Relevance');
+
+  useEffect(() => {
+    setSelectedCategories([]);
+    setPriceFilters([]);
+    setRatingFilters([]);
+    setSortBy('Relevance');
+  }, [query]);
+
+  const categoryOptions = useMemo(() => {
+    const names = [...new Set(products.map((item) => item.category_name).filter(Boolean))];
+    return names.length ? names : ['Mobiles', 'Fashion', 'Electronics', 'Furniture', 'Toys', 'Auto', 'Two Wheelers', 'Sports'];
+  }, [products]);
+
+  const toggleValue = (setter, value) => {
+    setter((current) => current.includes(value)
+      ? current.filter((item) => item !== value)
+      : [...current, value]);
+  };
+
+  const filteredItems = useMemo(() => {
+    let items = products.filter((item) => item?.id);
+
+    if (selectedCategories.length) {
+      const selected = selectedCategories.map(normalizedCategory);
+      items = items.filter((item) => selected.includes(normalizedCategory(item.category_name)));
+    }
+
+    if (priceFilters.length) {
+      items = items.filter((item) => {
+        const price = Number(item.price || 0);
+        return priceFilters.some((range) => {
+          if (range === 'Under Rs. 1,000') return price < 1000;
+          if (range === 'Rs. 1,000 - Rs. 10,000') return price >= 1000 && price <= 10000;
+          if (range === 'Rs. 10,000 - Rs. 25,000') return price > 10000 && price <= 25000;
+          return price > 25000;
+        });
+      });
+    }
+
+    if (ratingFilters.length) {
+      const minRating = Math.max(...ratingFilters.map((value) => Number(value[0]) || 0));
+      items = items.filter((item) => Number(item.rating || 0) >= minRating);
+    }
+
+    const sorted = [...items];
+    if (sortBy === 'Popularity') sorted.sort((a, b) => Number(b.rating_count || 0) - Number(a.rating_count || 0));
+    if (sortBy === 'Price -- Low to High') sorted.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+    if (sortBy === 'Price -- High to Low') sorted.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+    if (sortBy === 'Newest First') sorted.sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
+
+    return sorted;
+  }, [products, selectedCategories, priceFilters, ratingFilters, sortBy]);
+
+  const items = filteredItems;
   const count = items.length;
+  const suggestion = meta?.correctedQuery || meta?.suggestion || '';
+  const showSuggestion = suggestion && suggestion !== text(query);
 
   return (
     <main className="fk-search-page">
@@ -348,20 +529,27 @@ const SearchResults = ({ query, products, loading, openProduct }) => {
           <div className="fk-search-filter-head">
             <h2>Filters</h2>
           </div>
-          <FilterBlock title="Categories" options={['Mobiles & Accessories', 'Fashion', 'Electronics', 'Home & Furniture']} />
-          <FilterBlock title="Popular filters" options={['Fast delivery', 'Bank offer', 'Assured products', 'High rated']} />
-          <FilterBlock title="Price" options={['Under Rs. 1,000', 'Rs. 1,000 - Rs. 10,000', 'Rs. 10,000 - Rs. 25,000', 'Rs. 25,000+']} />
+          <FilterBlock title="Categories" options={categoryOptions} selected={selectedCategories} onToggle={(value) => toggleValue(setSelectedCategories, value)} />
+          <FilterBlock title="Customer ratings" options={['4+ Ratings', '3+ Ratings']} selected={ratingFilters} onToggle={(value) => toggleValue(setRatingFilters, value)} />
+          <FilterBlock title="Price" options={['Under Rs. 1,000', 'Rs. 1,000 - Rs. 10,000', 'Rs. 10,000 - Rs. 25,000', 'Rs. 25,000+']} selected={priceFilters} onToggle={(value) => toggleValue(setPriceFilters, value)} />
         </aside>
 
         <section className="fk-search-results">
           <div className="fk-search-head">
             <p>Home / Search</p>
             <h1>
-              {loading ? 'Searching...' : count ? `Showing 1 - ${count} of ${count} results for "${query}"` : `No results for "${query}"`}
+              {loading ? 'Searching...' : count ? `Showing 1 - ${count} of ${count} results for "${meta?.correctedQuery || query}"` : `No results for "${query}"`}
             </h1>
+            {showSuggestion && (
+              <p className="fk-spell-suggestion">
+                {meta?.correctedQuery ? 'Showing results for ' : 'Did you mean '}
+                <button type="button">{suggestion}</button>
+                {!meta?.correctedQuery && ' ?'}
+              </p>
+            )}
             <div className="fk-sort-row">
               {['Relevance', 'Popularity', 'Price -- Low to High', 'Price -- High to Low', 'Newest First'].map((label, index) => (
-                <button key={label} className={index === 0 ? 'active' : ''}>
+                <button key={label} className={sortBy === label ? 'active' : ''} onClick={() => setSortBy(label)}>
                   {label}
                 </button>
               ))}
@@ -386,13 +574,13 @@ const SearchResults = ({ query, products, loading, openProduct }) => {
   );
 };
 
-const FilterBlock = ({ title, options }) => (
+const FilterBlock = ({ title, options, selected, onToggle }) => (
   <div className="fk-filter-block">
     <h3>{title}</h3>
     <div>
       {options.map((option) => (
         <label key={option}>
-          <input type="checkbox" readOnly />
+          <input type="checkbox" checked={selected.includes(option)} onChange={() => onToggle(option)} />
           <span>{option}</span>
         </label>
       ))}
@@ -414,7 +602,7 @@ const SearchItem = ({ item, onClick }) => {
   return (
     <button className="fk-search-item" onClick={onClick}>
       <div className="fk-search-photo">
-        <img src={item.image_url} alt={item.name} loading="lazy" />
+        <img src={cardImage(item)} alt={item.name} loading="lazy" />
       </div>
 
       <div className="fk-search-copy">

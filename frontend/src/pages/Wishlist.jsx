@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
-import { Heart, Trash2, ShoppingCart, ArrowLeft, Star } from 'lucide-react';
+import { Heart, Trash2, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 const Wishlist = () => {
   const { wishlistItems, isLoading, removeFromWishlist } = useWishlist();
@@ -50,81 +50,53 @@ const Wishlist = () => {
           </button>
         </div>
       ) : (
-        /* Full Wishlist Grid */
-        <div className="bg-white rounded-[4px] shadow-flip overflow-hidden border border-gray-100">
-          <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white font-semibold">
-            <span className="text-[16px] text-flipkart-dark">My Wishlist ({wishlistItems.length} Items)</span>
+        <div className="fk-wishlist-panel">
+          <div className="fk-wishlist-head">
+            <h2>My Wishlist ({wishlistItems.length})</h2>
           </div>
 
-          <div className="divide-y divide-gray-100">
+          <div className="fk-wishlist-list">
             {wishlistItems.map((item) => {
               const discount = Math.round(((item.mrp - item.price) / item.mrp) * 100);
+              const unavailable = Number(item.stock) <= 0;
               return (
-                <div key={item.id} className="p-6 flex flex-col sm:flex-row gap-6 bg-white hover:bg-slate-50/10 transition animate-fade-in">
-                  
-                  {/* Image */}
-                  <div
+                <article key={item.id} className="fk-wishlist-row">
+                  <button
+                    type="button"
                     onClick={() => navigate(`/product/${item.product_id}`)}
-                    className="w-[100px] h-[100px] flex items-center justify-center shrink-0 p-1 border border-gray-100 rounded bg-white cursor-pointer self-center sm:self-start"
+                    className="fk-wishlist-photo"
                   >
-                    <img src={item.image_url} alt={item.name} className="max-h-full max-w-full object-contain" />
-                  </div>
+                    <img src={item.image_url} alt={item.name} />
+                    {unavailable && <span>Currently unavailable</span>}
+                  </button>
 
-                  {/* Core detail summary */}
-                  <div className="flex-1 flex flex-col justify-between">
+                  <div className="fk-wishlist-copy">
+                    <button type="button" onClick={() => navigate(`/product/${item.product_id}`)}>{item.name}</button>
+                    <small>Assured</small>
                     <div>
-                      {/* Title name */}
-                      <h4
-                        onClick={() => navigate(`/product/${item.product_id}`)}
-                        className="text-[14px] font-bold text-flipkart-dark hover:text-flipkart-blue transition cursor-pointer line-clamp-2 leading-relaxed"
-                      >
-                        {item.name}
-                      </h4>
-
-                      {/* Ratings */}
-                      <div className="flex items-center gap-2 mt-1.5 text-[12px] font-medium select-none">
-                        {item.rating > 0 && (
-                          <span className="bg-flipkart-green text-white px-1.5 py-0.5 rounded-[3px] text-[11px] flex items-center gap-0.5 font-bold">
-                            {item.rating} <Star size={10} className="fill-white" />
-                          </span>
-                        )}
-                        <span className="text-flipkart-textGray">({(item.rating_count || 0).toLocaleString()})</span>
-                      </div>
-
-                      {/* Prices details */}
-                      <div className="flex items-baseline gap-2.5 mt-2 flex-wrap text-[13px]">
-                        <span className="text-[16px] font-bold text-flipkart-dark">Rs. {parseFloat(item.price).toLocaleString()}</span>
-                        {item.mrp > item.price && (
-                          <>
-                            <span className="text-flipkart-textGray line-through">Rs. {parseFloat(item.mrp).toLocaleString()}</span>
-                            <span className="text-flipkart-green font-bold">{discount}% Off</span>
-                          </>
-                        )}
-                      </div>
+                      <strong>Rs. {parseFloat(item.price).toLocaleString()}</strong>
+                      {item.mrp > item.price && <del>Rs. {parseFloat(item.mrp).toLocaleString()}</del>}
+                      {discount > 0 && <span>{discount}% off</span>}
                     </div>
-
-                    {/* CTA operations row */}
-                    <div className="flex items-center gap-6 mt-4 select-none">
-                      {/* Transfer to Cart */}
+                    {!unavailable && (
                       <button
                         onClick={() => handleAddToCart(item.product_id)}
-                        disabled={item.stock <= 0}
-                        className="bg-flipkart-orange hover:bg-orange-600 text-white font-bold px-5 py-2.5 rounded-[2px] text-[12px] flex items-center gap-1.5 transition select-none tracking-wide shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="fk-wishlist-cart-button"
                       >
-                        <ShoppingCart size={14} /> ADD TO CART
+                        <ShoppingCart size={14} /> Move to cart
                       </button>
-
-                      {/* Remove */}
-                      <button
-                        onClick={() => handleRemove(item.product_id)}
-                        className="text-[12px] font-bold text-flipkart-textGray hover:text-red-600 flex items-center gap-1.5 transition select-none"
-                      >
-                        <Trash2 size={14} /> REMOVE
-                      </button>
-                    </div>
+                    )}
                   </div>
 
-                </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(item.product_id)}
+                    className="fk-wishlist-delete"
+                    aria-label="Remove from wishlist"
+                  >
+                    <Trash2 size={17} />
+                  </button>
+                </article>
               );
             })}
           </div>

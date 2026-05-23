@@ -24,7 +24,7 @@ const productCopy = {
   16: 'A gaming laptop for players and creators who need strong graphics performance. The RTX GPU, fast display, and sturdy build make it suitable for games, editing, college projects, and demanding apps.',
   17: 'Lightweight earbuds for music, calls, workouts, and gaming breaks. The case is easy to carry, battery backup is strong for the price, and the sound has the punch people like for daily listening.',
   18: 'A beginner-friendly DSLR for learning real photography. The kit lens is versatile, the grip feels secure, and Wi-Fi sharing makes it simple to move your shots after portraits, travel, or events.',
-  19: 'Classic blue Levi’s jeans with a slim fit that still feels wearable through the day. The wash is easy to pair, the fabric has comfortable stretch, and the style works with shirts, tees, and sneakers.',
+  19: "Classic blue Levi's jeans with a slim fit that still feels wearable through the day. The wash is easy to pair, the fabric has comfortable stretch, and the style works with shirts, tees, and sneakers.",
   20: 'A minimal Fastrack watch for everyday outfits. The black dial keeps it sharp, the strap feels comfortable, and the simple design fits casual, college, and semi-formal looks.',
   21: 'A roomy tote for office, shopping, and travel days. It has space for daily essentials, a secure zip closure, and a polished texture that looks good without trying too hard.',
   22: 'A supportive mattress for people who prefer balanced firmness. Memory foam eases pressure around the back and shoulders, while the breathable top fabric keeps sleep comfortable through the night.',
@@ -134,6 +134,10 @@ const ProductDetail = () => {
     }
   };
 
+  const displayImages = (images && images.length ? images : [activeImage || product.image_url || '/favicon.svg'])
+    .filter(Boolean)
+    .slice(0, 4);
+
   return (
     <div className="product-detail-page container mx-auto px-4 max-w-[1248px] py-6 animate-fade-in select-none">
       
@@ -153,37 +157,19 @@ const ProductDetail = () => {
           />
         </button>
 
-        {/* LEFT COLUMN: Sticky images gallery and dual Buttons (40% width) */}
-        <div className="product-media-column w-full lg:w-[40%] flex flex-col gap-4 lg:sticky lg:top-[76px] self-stretch">
-          
-          {/* Gallery display wrapper */}
-          <div className="product-gallery-box flex gap-4 border border-gray-100 p-4 rounded-[4px] bg-white h-[380px] md:h-[420px] justify-center items-center relative overflow-hidden select-none">
-            
-            {/* Clickable Image Thumbnails list (vertical on md screen, horizontal on mobile) */}
-            {images && images.length > 1 && (
-              <div className="product-thumbnails absolute left-4 top-4 bottom-4 flex flex-col gap-2 overflow-y-auto scrollbar-none pr-1 select-none z-10">
-                {images.map((img, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => setActiveImage(img)}
-                    className={`product-thumb w-12 h-12 border-2 rounded-[2px] p-0.5 bg-white cursor-pointer flex items-center justify-center overflow-hidden hover:border-flipkart-blue transition ${
-                      activeImage === img ? 'border-flipkart-blue shadow-sm' : 'border-gray-200'
-                    }`}
-                  >
-                    <img src={img} alt="" className="max-h-full max-w-full object-contain" />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Large primary Display */}
-            <div className="product-main-image flex-1 flex justify-center items-center h-full max-w-[70%] select-none">
-              <img
-                src={activeImage || '/favicon.svg'}
-                alt={name}
-                className="max-h-[95%] max-w-[95%] object-contain select-none"
-              />
-            </div>
+        {/* LEFT COLUMN: Product image grid */}
+        <div className="product-media-column w-full lg:w-[48%] flex flex-col gap-4 lg:sticky lg:top-[76px] self-start">
+          <div className="product-image-grid">
+            {displayImages.map((img, idx) => (
+              <button
+                key={`${img}-${idx}`}
+                type="button"
+                onClick={() => setActiveImage(img)}
+                className={`product-image-tile ${idx === 0 ? 'is-primary' : ''} ${activeImage === img ? 'is-active' : ''}`}
+              >
+                <img src={img} alt={`${name} view ${idx + 1}`} />
+              </button>
+            ))}
           </div>
 
           {/* Action CTAs */}
@@ -217,7 +203,7 @@ const ProductDetail = () => {
 
         </div>
 
-        {/* RIGHT COLUMN: Scrolling specs information (60% width) */}
+        {/* RIGHT COLUMN: Scrolling specs information */}
         <div className="product-info-column flex-1 select-none w-full">
           {/* Breadcrumb path */}
           <div className="product-breadcrumb text-[12px] font-semibold text-flipkart-textGray flex items-center gap-1.5 mb-2.5">

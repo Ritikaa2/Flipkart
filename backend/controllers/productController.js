@@ -44,6 +44,58 @@ function words(search) {
   return text(search).split(/\s+/).filter(Boolean);
 }
 
+function uniqueTerms(products) {
+  const ignored = new Set(['with', 'and', 'for', 'the', 'from', 'this', 'that', 'inch', 'size', 'pack']);
+  const terms = new Set();
+
+  products.forEach((product) => {
+    words(productText(product)).forEach((word) => {
+      const clean = word.replace(/[^a-z0-9]/g, '');
+      if (clean.length >= 3 && !ignored.has(clean)) terms.add(clean);
+    });
+  });
+
+  return [...terms];
+}
+
+function levenshtein(a, b) {
+  const matrix = Array.from({ length: a.length + 1 }, (_, row) => [row]);
+  for (let col = 1; col <= b.length; col++) matrix[0][col] = col;
+
+  for (let row = 1; row <= a.length; row++) {
+    for (let col = 1; col <= b.length; col++) {
+      const cost = a[row - 1] === b[col - 1] ? 0 : 1;
+      matrix[row][col] = Math.min(
+        matrix[row - 1][col] + 1,
+        matrix[row][col - 1] + 1,
+        matrix[row - 1][col - 1] + cost
+      );
+    }
+  }
+
+  return matrix[a.length][b.length];
+}
+
+function correctedSearch(products, search) {
+  const queryWords = words(search);
+  if (!queryWords.length) return '';
+
+  const terms = uniqueTerms(products);
+  const corrected = queryWords.map((word) => {
+    if (terms.includes(word)) return word;
+
+    const best = terms
+      .map((term) => ({ term, distance: levenshtein(word, term) }))
+      .filter((item) => item.distance <= Math.max(1, Math.min(2, Math.floor(word.length / 3))))
+      .sort((a, b) => a.distance - b.distance || a.term.length - b.term.length)[0];
+
+    return best?.term || word;
+  });
+
+  const suggestion = corrected.join(' ');
+  return suggestion !== text(search) ? suggestion : '';
+}
+
 function matchScore(product, search) {
   if (!search) return 1;
 
@@ -64,21 +116,13 @@ function matchScore(product, search) {
   return score;
 }
 
-function searchedAndRelated(products, search) {
+function searchedProducts(products, search) {
   if (!search) return products;
 
-  const direct = products
+  return products
     .map((product) => ({ ...product, search_score: matchScore(product, search) }))
     .filter((product) => product.search_score > 0)
     .sort((a, b) => b.search_score - a.search_score || a.id - b.id);
-
-  const categories = new Set(direct.map((product) => product.category_id));
-  const directIds = new Set(direct.map((product) => product.id));
-  const related = products
-    .filter((product) => categories.has(product.category_id) && !directIds.has(product.id))
-    .map((product) => ({ ...product, search_score: 0 }));
-
-  return [...direct, ...related];
 }
 
 async function loadProducts() {
@@ -92,13 +136,22 @@ async function loadProducts() {
 async function sendProducts(res, filters = {}) {
   let products = await loadProducts();
   products = products.filter((product) => matchesCategory(product, filters.category));
-  products = searchedAndRelated(products, filters.search);
+  const suggestion = correctedSearch(products, filters.search);
+  let searched = searchedProducts(products, filters.search);
+  let correctedQuery = '';
+
+  if (!searched.length && suggestion) {
+    searched = searchedProducts(products, suggestion);
+    correctedQuery = suggestion;
+  }
+
+  products = searched;
 
   if (filters.limit) {
     products = products.slice(0, Number(filters.limit));
   }
 
-  res.json({ products });
+  res.json({ products, suggestion, correctedQuery });
 }
 
 exports.getAllProducts = async (req, res) => {

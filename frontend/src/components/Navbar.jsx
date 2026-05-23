@@ -33,12 +33,12 @@ const navCategories = [
   { label: 'Electronics', icon: '/flipkart-icons/cat-electronics.png', to: '/?category=Electronics' },
   { label: 'Home', icon: '/flipkart-icons/cat-home.png', to: '/?category=Home' },
   { label: 'Appliances', icon: '/flipkart-icons/cat-appliances.png', to: '/?category=Appliances' },
-  { label: 'Toys, ba...', icon: '/flipkart-icons/cat-toys.png', to: '/?category=Toys' },
-  { label: 'Food & H...', icon: '/flipkart-icons/cat-food.png', to: '/?category=Grocery' },
-  { label: 'Auto Acc...', icon: '/flipkart-icons/cat-auto.png', to: '/?category=Auto' },
-  { label: '2 Wheele...', icon: '/flipkart-icons/cat-two-wheelers.png', to: '/?category=Two Wheelers' },
-  { label: 'Sports & ...', icon: '/flipkart-icons/cat-sports.png', to: '/?category=Sports' },
-  { label: 'Books & ...', icon: '/flipkart-icons/cat-books.png', to: '/?category=Books' },
+  { label: 'Toys', icon: '/flipkart-icons/cat-toys.png', to: '/?category=Toys' },
+  { label: 'Grocery', icon: '/flipkart-icons/cat-food.png', to: '/?category=Grocery' },
+  { label: 'Auto', icon: '/flipkart-icons/cat-auto.png', to: '/?category=Auto' },
+  { label: 'Two Wheelers', icon: '/flipkart-icons/cat-two-wheelers.png', to: '/?category=Two Wheelers' },
+  { label: 'Sports', icon: '/flipkart-icons/cat-sports.png', to: '/?category=Sports' },
+  { label: 'Books', icon: '/flipkart-icons/cat-books.png', to: '/?category=Books' },
   { label: 'Furniture', icon: '/flipkart-icons/cat-furniture.png', to: '/?category=Furniture' }
 ];
 

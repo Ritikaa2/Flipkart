@@ -8,6 +8,16 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const money = (value) => Number(value || 0).toFixed(2);
 const NOTIFICATION_TIMEOUT_MS = 8000;
 
+function makeOrderNumber(userId) {
+  const stamp = Date.now().toString(36).toUpperCase();
+  const random = crypto.randomBytes(2).toString('hex').toUpperCase();
+  return `FK${stamp}${String(userId).padStart(3, '0')}${random}`;
+}
+
+function orderLabel(order) {
+  return order.order_number || `FK-${order.id}`;
+}
+
 function withTimeout(promise, fallback, label, ms = NOTIFICATION_TIMEOUT_MS) {
   let timer;
   const timeout = new Promise((resolve) => {
@@ -82,12 +92,13 @@ async function getFirebaseToken() {
 function orderNotification(order, items) {
   return {
     notification: {
-      title: `Order #FK-${order.id} placed successfully`,
+      title: `Order #${orderLabel(order)} placed successfully`,
       body: `Paid Rs.${money(order.final_amount)} for ${items.length} item(s).`
     },
     data: {
       type: 'ORDER_PLACED',
       orderId: String(order.id),
+      orderNumber: orderLabel(order),
       customerName: String(order.shipping_name),
       finalAmount: money(order.final_amount),
       paymentMethod: String(order.payment_method || 'Card'),
@@ -139,7 +150,7 @@ function emailText(order, items) {
     .join('\n');
 
   return [
-    `Order #FK-${order.id} placed successfully.`,
+    `Order #${orderLabel(order)} placed successfully.`,
     '',
     lines,
     '',
@@ -164,7 +175,7 @@ function emailHtml(order, items) {
         <p style="margin:6px 0 0;">Your order has been placed successfully.</p>
       </div>
       <div style="padding:22px 24px;">
-        <h3 style="margin-top:0;color:#2874f0;">Order #FK-${order.id}</h3>
+        <h3 style="margin-top:0;color:#2874f0;">Order #${orderLabel(order)}</h3>
         <table style="width:100%;border-collapse:collapse;font-size:14px;">${rows}</table>
         <p><b>Total MRP:</b> Rs.${money(order.total_mrp)}</p>
         <p><b>Discount:</b> Rs.${money(order.total_discount)}</p>
@@ -201,7 +212,7 @@ async function sendOrderEmail(order, items) {
     await transporter.sendMail({
       from: process.env.SMTP_FROM?.trim() || user,
       to,
-      subject: `Flipkart Order Successful - #FK-${order.id}`,
+      subject: `Flipkart Order Successful - #${orderLabel(order)}`,
       text: emailText(order, items),
       html: emailHtml(order, items)
     });
@@ -311,11 +322,12 @@ exports.placeOrder = async (req, res) => {
     const [users] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
     const { totalMrp, totalDiscount, finalAmount } = getTotals(cartItems);
     const deliveryCharges = 0;
+    const orderNumber = makeOrderNumber(userId);
 
     const [orderResult] = await db.query(
-      `INSERT INTO orders (user_id, total_mrp, total_discount, delivery_charges, final_amount, shipping_name, shipping_phone, shipping_address, payment_status, payment_method)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, totalMrp, totalDiscount, deliveryCharges, finalAmount, shipping_name, shipping_phone, shipping_address, 'Paid', payment_method || 'Card']
+      `INSERT INTO orders (order_number, user_id, total_mrp, total_discount, delivery_charges, final_amount, shipping_name, shipping_phone, shipping_address, payment_status, payment_method)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [orderNumber, userId, totalMrp, totalDiscount, deliveryCharges, finalAmount, shipping_name, shipping_phone, shipping_address, 'Paid', payment_method || 'Card']
     );
 
     const items = [];
@@ -332,6 +344,7 @@ exports.placeOrder = async (req, res) => {
 
     const order = {
       id: orderResult.insertId,
+      order_number: orderNumber,
       shipping_name,
       shipping_phone,
       shipping_address,
@@ -361,6 +374,7 @@ exports.placeOrder = async (req, res) => {
     res.status(201).json({
       message: 'Order placed successfully',
       orderId: order.id,
+      orderNumber: order.order_number,
       finalAmount,
       emailTo: email.to,
       emailSent: email.sent,

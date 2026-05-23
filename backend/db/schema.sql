@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS wishlist (
 -- 7. Orders Table
 CREATE TABLE IF NOT EXISTS orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  order_number VARCHAR(32) UNIQUE,
   user_id INT,
   total_mrp DECIMAL(10,2) NOT NULL,
   total_discount DECIMAL(10,2) NOT NULL,

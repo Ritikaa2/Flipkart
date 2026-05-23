@@ -5,6 +5,7 @@ import { Bell, CheckCircle2, ShoppingBag, Calendar, CheckSquare, MailCheck } fro
 const OrderSuccess = () => {
   const navigate = useNavigate();
   const [orderId] = useState(() => localStorage.getItem('lastPlacedOrderId') || 'N/A');
+  const [orderNumber] = useState(() => localStorage.getItem('lastPlacedOrderNumber') || '');
   const [amount] = useState(() => localStorage.getItem('lastPlacedOrderAmount') || '0');
   const [firebaseSent] = useState(() => localStorage.getItem('lastOrderFirebaseSent') === 'true');
   const [firebaseFallback] = useState(() => localStorage.getItem('lastOrderFirebaseFallback') === 'true');
@@ -23,6 +24,7 @@ const OrderSuccess = () => {
     // Cleanup cached keys on unmount to keep state pure
     return () => {
       localStorage.removeItem('lastPlacedOrderId');
+      localStorage.removeItem('lastPlacedOrderNumber');
       localStorage.removeItem('lastPlacedOrderAmount');
       localStorage.removeItem('lastOrderFirebaseSent');
       localStorage.removeItem('lastOrderFirebaseFallback');
@@ -54,7 +56,7 @@ const OrderSuccess = () => {
           
           <div className="flex justify-between items-center pb-3 border-b border-gray-200/60">
             <span className="text-flipkart-textGray font-semibold flex items-center gap-1.5"><CheckSquare size={15} /> Order Reference ID:</span>
-            <span className="font-extrabold text-flipkart-blue font-mono">#FK-{orderId}</span>
+            <span className="font-extrabold text-flipkart-blue font-mono">#{orderNumber || `FK-${orderId}`}</span>
           </div>
 
           <div className="flex justify-between items-center">

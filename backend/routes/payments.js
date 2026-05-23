@@ -7,5 +7,7 @@ router.use(authMiddleware);
 
 router.post('/razorpay-qr', paymentController.createRazorpayQr);
 router.post('/razorpay-order', paymentController.createRazorpayOrder);
+router.post('/create-order', paymentController.createRazorpayOrder);
+router.post('/verify-payment', paymentController.verifyRazorpayPayment);
 
 module.exports = router;

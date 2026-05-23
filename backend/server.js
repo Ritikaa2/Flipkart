@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const authMiddleware = require('./middleware/authMiddleware');
+const paymentController = require('./controllers/paymentController');
 
 const corsOptions = {
   origin(origin, callback) {
@@ -28,6 +30,8 @@ app.use('/api/cart', require('./routes/cart'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/wishlist', require('./routes/wishlist'));
 app.use('/api/payments', require('./routes/payments'));
+app.post('/api/create-order', authMiddleware, paymentController.createRazorpayOrder);
+app.post('/api/verify-payment', authMiddleware, paymentController.verifyRazorpayPayment);
 
 app.use((_req, res) => {
   res.status(404).json({ message: 'API endpoint not found' });

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { requestFirebaseNotificationToken } from '../services/firebase';
-import { Check, ShieldCheck, CreditCard, Lock, QrCode, RefreshCw, Smartphone, Trash2 } from 'lucide-react';
+import { Check, ShieldCheck, Lock, Smartphone, Trash2 } from 'lucide-react';
 
 const Checkout = () => {
   const { user } = useAuth();
@@ -38,13 +38,6 @@ const Checkout = () => {
   });
   const [selectedAddressId, setSelectedAddressId] = useState(null);
 
-  // Payment mock fields
-  const [paymentMethod, setPaymentMethod] = useState('Card');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvv, setCardCvv] = useState('');
-  const [qrPayment, setQrPayment] = useState(null);
-  const [isQrLoading, setIsQrLoading] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -90,99 +83,7 @@ const Checkout = () => {
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setPaymentError('');
-
-    if (paymentMethod === 'Card') {
-      if (!cardNumber || !cardExpiry || !cardCvv) {
-        setPaymentError('Please fill in all your card credentials.');
-        return;
-      }
-      if (cardNumber.replace(/\s/g, '').length !== 16) {
-        setPaymentError('Card number must be 16 digits.');
-        return;
-      }
-    }
-
-    if (paymentMethod === 'RazorpayQR' && !qrPayment) {
-      setPaymentError('Please generate and scan the Razorpay QR before confirming your order.');
-      return;
-    }
-
-    const firebaseToken = await requestFirebaseNotificationToken();
-
-    // Start secure payment simulation
-    setIsProcessing(true);
-    
-    // Format shipping address string
-    const fullShippingAddress = `${locality}, City: ${city}, State: ${state} - PIN: ${pinCode}`;
-
-    setTimeout(async () => {
-      try {
-        const orderData = {
-          shipping_name: shippingName,
-          shipping_phone: shippingPhone,
-          shipping_address: fullShippingAddress,
-          payment_method: paymentMethod,
-          firebase_device_token: firebaseToken || '',
-          cart_items: cartItems.map((item) => ({
-            product_id: item.product_id || item.id,
-            quantity: item.quantity
-          }))
-        };
-
-        const response = await api.post('/orders', orderData);
-        const { orderId, orderNumber } = response.data;
-        
-        // Success: cache details, clean local cart, route to Success
-        localStorage.setItem('lastPlacedOrderId', orderId);
-        localStorage.setItem('lastPlacedOrderNumber', orderNumber || `FK-${orderId}`);
-        localStorage.setItem('lastPlacedOrderAmount', finalAmount);
-        localStorage.setItem('lastOrderFirebaseSent', response.data.firebaseNotificationSent ? 'true' : 'false');
-        localStorage.setItem('lastOrderFirebaseFallback', response.data.firebaseNotificationFallback ? 'true' : 'false');
-        localStorage.setItem('lastOrderFirebaseMessageId', response.data.firebaseMessageId || '');
-        localStorage.setItem('lastOrderEmailTo', response.data.emailTo || user?.email || '');
-        localStorage.setItem('lastOrderEmailSent', response.data.emailSent ? 'true' : 'false');
-        localStorage.setItem('lastOrderEmailFallback', response.data.emailFallback ? 'true' : 'false');
-        clearCart();
-        setIsProcessing(false);
-        navigate(`/order-success`);
-      } catch (err) {
-        console.error("Order placing failure:", err);
-        setPaymentError(err.response?.data?.message || 'Transaction declined. Please try again.');
-        setIsProcessing(false);
-      }
-    }, 1800);
-  };
-
-  // Card input mask helper (adds spacing every 4 digits)
-  const handleCardNumberChange = (e) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 16);
-    const formatted = value.match(/.{1,4}/g)?.join(' ') || value;
-    setCardNumber(formatted);
-  };
-
-  const handleExpiryChange = (e) => {
-    let value = e.target.value.replace(/\D/g, '').slice(0, 4);
-    if (value.length >= 2) {
-      value = `${value.slice(0, 2)}/${value.slice(2)}`;
-    }
-    setCardExpiry(value);
-  };
-
-  const generateRazorpayQr = async () => {
-    setPaymentError('');
-    setIsQrLoading(true);
-    try {
-      const res = await api.post('/payments/razorpay-qr', {
-        amount: finalAmount,
-        customerName: shippingName || user?.name || 'Customer'
-      });
-      setQrPayment(res.data.qr);
-    } catch (err) {
-      console.error('QR creation failed:', err);
-      setPaymentError(err.response?.data?.message || 'Direct QR could not be generated. Please use Open Razorpay Payment for real payment.');
-    } finally {
-      setIsQrLoading(false);
-    }
+    await openRazorpayCheckout();
   };
 
   const loadRazorpayScript = () => {
@@ -238,16 +139,21 @@ const Checkout = () => {
         throw new Error('Razorpay checkout script could not load. Check internet connection.');
       }
 
-      const res = await api.post('/payments/razorpay-order', { amount: finalAmount });
-      const { key_id, order } = res.data;
+      const res = await api.post('/create-order', {
+        amount: Math.round(finalAmount * 100),
+        currency: 'INR',
+        receipt: `fk_${Date.now()}`
+      });
+      const { key_id, order_id, amount, currency } = res.data;
+      const razorpayKey = key_id || import.meta.env.VITE_RAZORPAY_KEY_ID;
 
       const razorpay = new window.Razorpay({
-        key: key_id,
-        amount: order.amount,
-        currency: order.currency,
+        key: razorpayKey,
+        amount,
+        currency,
         name: 'Flipkart Clone',
         description: 'Secure Razorpay payment',
-        order_id: order.id,
+        order_id,
         prefill: {
           name: shippingName || user?.name || '',
           email: user?.email || '',
@@ -262,17 +168,23 @@ const Checkout = () => {
         theme: {
           color: '#2874f0'
         },
-        handler: async () => {
+        handler: async (paymentResponse) => {
           try {
+            await api.post('/verify-payment', {
+              razorpay_payment_id: paymentResponse.razorpay_payment_id,
+              razorpay_order_id: paymentResponse.razorpay_order_id,
+              razorpay_signature: paymentResponse.razorpay_signature
+            });
             await placePaidOrder('Razorpay');
           } catch (err) {
-            setPaymentError(err.response?.data?.message || 'Payment done, but order creation failed.');
+            setPaymentError(err.response?.data?.message || 'Payment verification failed. Your order was not marked as paid.');
           } finally {
             setIsProcessing(false);
           }
         },
         modal: {
           ondismiss: () => {
+            setPaymentError('Razorpay checkout was cancelled.');
             setIsProcessing(false);
           }
         }
@@ -587,161 +499,29 @@ const Checkout = () => {
                   </div>
                 )}
 
-                {/* Selection Radios */}
-                <div className="payment-method-list flex flex-col gap-4 border border-gray-150 rounded-[4px] overflow-hidden bg-white select-none">
-                  {/* Option 1: Card */}
-                  <label className={`flex items-center gap-3 p-4 border-b border-gray-100 cursor-pointer transition hover:bg-slate-50 ${
-                    paymentMethod === 'Card' ? 'bg-blue-50/20' : ''
-                  }`}>
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value="Card"
-                      checked={paymentMethod === 'Card'}
-                      onChange={() => setPaymentMethod('Card')}
-                      className="accent-flipkart-blue h-4 w-4"
-                    />
-                    <CreditCard size={18} className="text-gray-500" />
-                    <span className="text-[14px] font-bold text-gray-700">Credit / Debit / ATM Card</span>
-                  </label>
-
-                  {/* Option 2: Razorpay QR */}
-                  <label className={`flex items-center gap-3 p-4 border-b border-gray-100 cursor-pointer transition hover:bg-slate-50 ${
-                    paymentMethod === 'RazorpayQR' ? 'bg-blue-50/20' : ''
-                  }`}>
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value="RazorpayQR"
-                      checked={paymentMethod === 'RazorpayQR'}
-                      onChange={() => setPaymentMethod('RazorpayQR')}
-                      className="accent-flipkart-blue h-4 w-4"
-                    />
-                    <QrCode size={18} className="text-gray-500" />
-                    <span className="text-[14px] font-bold text-gray-700">Razorpay UPI QR Code</span>
-                    <span className="ml-auto text-[11px] font-bold text-flipkart-green bg-green-50 border border-green-100 px-2 py-1 rounded">Recommended</span>
-                  </label>
-
-                  {/* Option 3: COD */}
-                  <label className={`flex items-center gap-3 p-4 cursor-pointer transition hover:bg-slate-50 ${
-                    paymentMethod === 'COD' ? 'bg-blue-50/20' : ''
-                  }`}>
-                    <input
-                      type="radio"
-                      name="payment_method"
-                      value="COD"
-                      checked={paymentMethod === 'COD'}
-                      onChange={() => setPaymentMethod('COD')}
-                      className="accent-flipkart-blue h-4 w-4"
-                    />
-                    <span className="text-[14px] font-bold text-gray-700">Cash on Delivery (COD)</span>
-                  </label>
-                </div>
-
-                {/* Card inputs conditional form */}
-                {paymentMethod === 'Card' && (
-                  <div className="bg-slate-50 border border-slate-100 p-6 rounded-[4px] flex flex-col gap-4 animate-fade-in select-none">
-                    <h5 className="text-[13px] font-bold text-flipkart-textGray uppercase tracking-wider mb-1">Card Details</h5>
-                    
+                <div className="razorpay-qr-box bg-slate-50 border border-slate-100 p-6 rounded-[4px] flex flex-col gap-4 animate-fade-in select-none">
+                  <div className="qr-box-header">
                     <div>
-                      <label className="text-[12px] text-gray-500 font-semibold block mb-1">Card Number</label>
-                      <input
-                        type="text"
-                        value={cardNumber}
-                        onChange={handleCardNumberChange}
-                        placeholder="XXXX XXXX XXXX XXXX"
-                        className="w-full border border-gray-200 rounded px-4 py-2 text-[14px] font-medium outline-none focus:border-flipkart-blue bg-white text-black text-center tracking-wider"
-                        required={paymentMethod === 'Card'}
-                      />
+                      <h5 className="text-[13px] font-bold text-flipkart-textGray uppercase tracking-wider mb-1">Razorpay Standard Checkout</h5>
+                      <p>Pay securely with UPI, cards, netbanking, wallets, or Pay Later in the Razorpay payment modal.</p>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-[12px] text-gray-500 font-semibold block mb-1">Expiration (MM/YY)</label>
-                        <input
-                          type="text"
-                          value={cardExpiry}
-                          onChange={handleExpiryChange}
-                          placeholder="MM/YY"
-                          className="w-full border border-gray-200 rounded px-4 py-2 text-[14px] font-medium outline-none focus:border-flipkart-blue bg-white text-black text-center"
-                          required={paymentMethod === 'Card'}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[12px] text-gray-500 font-semibold block mb-1">CVV / CVC</label>
-                        <input
-                          type="password"
-                          value={cardCvv}
-                          onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                          placeholder="***"
-                          className="w-full border border-gray-200 rounded px-4 py-2 text-[14px] font-medium outline-none focus:border-flipkart-blue bg-white text-black text-center font-mono"
-                          required={paymentMethod === 'Card'}
-                        />
-                      </div>
-                    </div>
+                    <Smartphone size={28} />
                   </div>
-                )}
 
-                {paymentMethod === 'RazorpayQR' && (
-                  <div className="razorpay-qr-box bg-slate-50 border border-slate-100 p-6 rounded-[4px] flex flex-col gap-4 animate-fade-in select-none">
-                    <div className="qr-box-header">
-                      <div>
-                        <h5 className="text-[13px] font-bold text-flipkart-textGray uppercase tracking-wider mb-1">Scan & Pay with Razorpay</h5>
-                        <p>Open any UPI app, scan the QR, complete payment, then confirm your order.</p>
-                      </div>
-                      <Smartphone size={28} />
-                    </div>
-
-                    <div className="qr-payment-area">
-                      <div className="qr-preview">
-                        {qrPayment ? (
-                          <img src={qrPayment.display_image_url || qrPayment.image_url} alt="Razorpay UPI QR code" />
-                        ) : (
-                          <QrCode size={96} />
-                        )}
-                      </div>
-
-                      <div className="qr-payment-copy">
-                        <span className="qr-amount">Rs. {finalAmount.toLocaleString()}</span>
-                        <strong>Real Razorpay Checkout</strong>
-                        <p>Open Razorpay secure checkout. Select UPI to scan/pay using your UPI app. This works even when direct QR API is unavailable.</p>
-                        {qrPayment?.id && <small>Reference: {qrPayment.id}</small>}
-                        <button
-                          type="button"
-                          onClick={openRazorpayCheckout}
-                          disabled={isProcessing}
-                          className="qr-generate-button"
-                        >
-                          <Smartphone size={15} /> Open Razorpay Payment
-                        </button>
-                        <button
-                          type="button"
-                          onClick={generateRazorpayQr}
-                          disabled={isQrLoading}
-                          className="qr-secondary-button"
-                        >
-                          {isQrLoading ? (
-                            <>
-                              <RefreshCw size={15} className="animate-spin" /> Generating QR...
-                            </>
-                          ) : qrPayment ? (
-                            <>
-                              <RefreshCw size={15} /> Regenerate QR
-                            </>
-                          ) : (
-                            <>
-                              <QrCode size={15} /> Generate Razorpay QR
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="qr-note">
-                      Recommended: Open Razorpay Payment. Direct QR API optional hai aur Razorpay account me QR feature enabled hona chahiye.
-                    </div>
+                  <div className="qr-payment-copy">
+                    <span className="qr-amount">Rs. {finalAmount.toLocaleString()}</span>
+                    <strong>Razorpay secure payment</strong>
+                    <p>Your order will be placed only after Razorpay confirms and backend signature verification succeeds.</p>
+                    <button
+                      type="button"
+                      onClick={openRazorpayCheckout}
+                      disabled={isProcessing}
+                      className="qr-generate-button"
+                    >
+                      <Smartphone size={15} /> Pay with Razorpay
+                    </button>
                   </div>
-                )}
+                </div>
 
                 {/* Place Order submit */}
                 <button
@@ -798,4 +578,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-

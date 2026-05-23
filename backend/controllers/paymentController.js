@@ -1,5 +1,25 @@
 const path = require('path');
+const crypto = require('crypto');
+const Razorpay = require('razorpay');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+
+function getRazorpayKeys() {
+  return {
+    keyId: process.env.RAZORPAY_KEY_ID?.trim(),
+    keySecret: process.env.RAZORPAY_KEY_SECRET?.trim()
+  };
+}
+
+function getRazorpayClient() {
+  const { keyId, keySecret } = getRazorpayKeys();
+  if (!keyId || !keySecret) {
+    return null;
+  }
+  return new Razorpay({
+    key_id: keyId,
+    key_secret: keySecret
+  });
+}
 
 async function razorpayRequest(path, method, body, keyId, keySecret) {
   const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
@@ -115,40 +135,82 @@ exports.createRazorpayQr = async (req, res) => {
 };
 
 exports.createRazorpayOrder = async (req, res) => {
-  const { amount } = req.body;
-  const payableAmount = Number(amount);
+  const payableAmount = Number(req.body.amount);
+  const currency = String(req.body.currency || 'INR').toUpperCase();
+  const receipt = String(req.body.receipt || `fk_rcpt_${Date.now()}`).slice(0, 40);
 
-  if (!payableAmount || payableAmount <= 0) {
-    return res.status(400).json({ message: 'Valid payment amount is required' });
+  if (!Number.isFinite(payableAmount) || payableAmount < 100) {
+    return res.status(400).json({ message: 'Amount must be at least 100 paise' });
   }
 
-  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
-  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  const { keyId } = getRazorpayKeys();
+  const razorpay = getRazorpayClient();
 
-  if (!keyId || !keySecret) {
-    return res.status(400).json({ message: 'Razorpay keys are missing in backend .env' });
+  if (!razorpay) {
+    return res.status(401).json({ message: 'Razorpay keys are missing in backend .env' });
   }
 
   try {
-    const order = await razorpayRequest('/orders', 'POST', {
-      amount: Math.round(payableAmount * 100),
-      currency: 'INR',
-      receipt: `fk_rcpt_${Date.now()}`,
+    const order = await razorpay.orders.create({
+      amount: Math.round(payableAmount),
+      currency,
+      receipt,
       notes: {
         app: 'flipkart_clone',
         user_id: String(req.user.id)
       }
-    }, keyId, keySecret);
+    });
 
     res.status(201).json({
       key_id: keyId,
+      order_id: order.id,
+      amount: order.amount,
+      currency: order.currency,
       order
     });
   } catch (error) {
     console.error('Razorpay order creation failed:', error);
-    res.status(error.status || 500).json({
+    res.status(error.statusCode || error.status || 500).json({
       message: error.message || 'Unable to create Razorpay order',
-      error: error.payload || {}
+      error: error.error || error.payload || {}
     });
   }
+};
+
+exports.verifyRazorpayPayment = async (req, res) => {
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature
+  } = req.body;
+
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    return res.status(400).json({ message: 'Payment id, order id and signature are required' });
+  }
+
+  const { keySecret } = getRazorpayKeys();
+  if (!keySecret) {
+    return res.status(401).json({ message: 'Razorpay key secret is missing in backend .env' });
+  }
+
+  const generatedSignature = crypto
+    .createHmac('sha256', keySecret)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest('hex');
+
+  const generatedBuffer = Buffer.from(generatedSignature);
+  const receivedBuffer = Buffer.from(razorpay_signature);
+  const isValid = generatedBuffer.length === receivedBuffer.length &&
+    crypto.timingSafeEqual(generatedBuffer, receivedBuffer);
+
+  if (!isValid) {
+    return res.status(400).json({ message: 'Invalid Razorpay payment signature' });
+  }
+
+  res.json({
+    success: true,
+    message: 'Payment verified successfully',
+    payment_id: razorpay_payment_id,
+    order_id: razorpay_order_id
+  });
 };

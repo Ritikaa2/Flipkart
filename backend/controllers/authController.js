@@ -47,6 +47,7 @@ async function sendOtp(email, otp) {
   const port = process.env.SMTP_PORT?.trim();
   const user = process.env.SMTP_USER?.trim();
   const pass = process.env.SMTP_PASS?.trim();
+  const portNumber = Number(port);
 
   if (!host || !port || !user || !pass) {
     console.log(`Password reset OTP for ${email}: ${otp}`);
@@ -55,17 +56,29 @@ async function sendOtp(email, otp) {
 
   const transporter = nodemailer.createTransport({
     host,
-    port: Number(port),
-    secure: Number(port) === 465,
-    auth: { user, pass }
+    port: portNumber,
+    secure: portNumber === 465,
+    auth: { user, pass },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 15000,
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM?.trim() || user,
-    to: email,
-    subject: 'Flipkart password reset OTP',
-    text: `Your password reset OTP is ${otp}. It is valid for 10 minutes.`
-  });
+  try {
+    await transporter.verify();
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM?.trim() || user,
+      to: email,
+      subject: 'Flipkart password reset OTP',
+      text: `Your password reset OTP is ${otp}. It is valid for 10 minutes.`
+    });
+  } catch (err) {
+    err.message = `SMTP ${host}:${portNumber} failed - ${err.message}`;
+    throw err;
+  }
 }
 
 exports.register = async (req, res) => {

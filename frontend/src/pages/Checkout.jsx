@@ -107,7 +107,11 @@ const Checkout = () => {
           shipping_phone: shippingPhone,
           shipping_address: fullShippingAddress,
           payment_method: paymentMethod,
-          firebase_device_token: firebaseToken || ''
+          firebase_device_token: firebaseToken || '',
+          cart_items: cartItems.map((item) => ({
+            product_id: item.product_id || item.id,
+            quantity: item.quantity
+          }))
         };
 
         const response = await api.post('/orders', orderData);
@@ -187,7 +191,11 @@ const Checkout = () => {
       shipping_phone: shippingPhone,
       shipping_address: fullShippingAddress,
       payment_method: method,
-      firebase_device_token: firebaseToken || ''
+      firebase_device_token: firebaseToken || '',
+      cart_items: cartItems.map((item) => ({
+        product_id: item.product_id || item.id,
+        quantity: item.quantity
+      }))
     });
 
     const { orderId } = response.data;

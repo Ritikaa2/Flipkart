@@ -191,6 +191,41 @@ function getTotals(items) {
   }, { totalMrp: 0, totalDiscount: 0, finalAmount: 0 });
 }
 
+async function getSnapshotCartItems(items = []) {
+  const normalizedItems = items
+    .map((item) => ({
+      productId: Number(item.product_id || item.productId || item.id),
+      quantity: Math.max(1, Number(item.quantity || 1))
+    }))
+    .filter((item) => Number.isInteger(item.productId) && item.productId > 0);
+
+  if (!normalizedItems.length) {
+    return [];
+  }
+
+  const cartItems = [];
+  for (const item of normalizedItems) {
+    const [products] = await db.query('SELECT * FROM products WHERE id = ?', [item.productId]);
+    const product = products[0];
+
+    if (!product) {
+      throw new Error(`Product ${item.productId} is not available`);
+    }
+
+    cartItems.push({
+      id: item.productId,
+      product_id: item.productId,
+      quantity: item.quantity,
+      name: product.name,
+      price: product.price,
+      mrp: product.mrp,
+      stock: product.stock
+    });
+  }
+
+  return cartItems;
+}
+
 async function getOrderItems(orderId) {
   const [items] = await db.query(
     `SELECT oi.*, p.name, p.price as current_price FROM order_items oi
@@ -208,19 +243,27 @@ async function getOrderItems(orderId) {
 
 exports.placeOrder = async (req, res) => {
   const userId = req.user.id;
-  const { shipping_name, shipping_phone, shipping_address, payment_method, firebase_device_token } = req.body;
+  const { shipping_name, shipping_phone, shipping_address, payment_method, firebase_device_token, cart_items } = req.body;
 
   if (!shipping_name || !shipping_phone || !shipping_address) {
     return res.status(400).json({ message: 'Shipping name, phone and address are required' });
   }
 
   try {
-    const [cartItems] = await db.query(
+    const [storedCartItems] = await db.query(
       `SELECT c.*, p.name, p.price, p.mrp, p.stock FROM cart_items c
        INNER JOIN products p ON c.product_id = p.id
        WHERE c.user_id = ?`,
       [userId]
     );
+    let cartItems = storedCartItems;
+    if (!cartItems.length) {
+      try {
+        cartItems = await getSnapshotCartItems(cart_items);
+      } catch (snapshotErr) {
+        return res.status(400).json({ message: snapshotErr.message });
+      }
+    }
 
     if (!cartItems.length) {
       return res.status(400).json({ message: 'Cart is empty' });

@@ -1,7 +1,7 @@
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const path = require('path');
 const db = require('../config/db');
+const { sendEmailJsTemplate } = require('../services/emailJsService');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
@@ -187,39 +187,37 @@ function emailHtml(order, items) {
 }
 
 async function sendOrderEmail(order, items) {
-  const host = process.env.SMTP_HOST?.trim();
-  const port = process.env.SMTP_PORT?.trim();
-  const user = process.env.SMTP_USER?.trim();
-  const pass = process.env.SMTP_PASS?.trim();
+  const templateId = process.env.EMAILJS_ORDER_TEMPLATE_ID?.trim();
   const to = order.email || 'customer@example.com';
 
-  if (!host || !port || !user || !pass) {
+  if (!process.env.EMAILJS_SERVICE_ID || !process.env.EMAILJS_PUBLIC_KEY || !templateId) {
     console.log(`Email not configured. Order email for ${to}:\n${emailText(order, items)}`);
     return { sent: false, to, fallback: true };
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      host,
-      port: Number(port),
-      secure: Number(port) === 465,
-      connectionTimeout: NOTIFICATION_TIMEOUT_MS,
-      greetingTimeout: NOTIFICATION_TIMEOUT_MS,
-      socketTimeout: NOTIFICATION_TIMEOUT_MS,
-      auth: { user, pass }
-    });
-
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM?.trim() || user,
-      to,
+    await sendEmailJsTemplate(templateId, {
+      to_email: to,
+      email: to,
+      customer_name: order.shipping_name,
+      order_number: orderLabel(order),
+      order_id: orderLabel(order),
       subject: `Flipkart Order Successful - #${orderLabel(order)}`,
-      text: emailText(order, items),
-      html: emailHtml(order, items)
+      items: items.map((item) => `${item.name} x ${item.quantity} - Rs.${money(item.price * item.quantity)}`).join('\n'),
+      item_count: items.length,
+      total_mrp: money(order.total_mrp),
+      total_discount: money(order.total_discount),
+      final_amount: money(order.final_amount),
+      payment_method: order.payment_method || 'Card',
+      shipping_phone: order.shipping_phone,
+      shipping_address: order.shipping_address,
+      message: emailText(order, items),
+      html_message: emailHtml(order, items)
     });
 
     return { sent: true, to, fallback: false };
   } catch (err) {
-    console.log(`Email failed for ${to}: ${err.message}`);
+    console.log(`EmailJS order email failed for ${to}: ${err.message}`);
     return { sent: false, to, fallback: true };
   }
 }

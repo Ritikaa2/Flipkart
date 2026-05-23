@@ -16,7 +16,6 @@
     "express": "^4.19.2",
     "firebase": "^12.13.0",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.9.7",
-    "nodemailer": "^6.9.13"
+    "mysql2": "^3.9.7"
   }
 }

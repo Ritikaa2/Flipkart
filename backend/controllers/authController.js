@@ -1,12 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const dns = require('dns');
 const path = require('path');
 const db = require('../config/db');
+const { sendEmailJsTemplate } = require('../services/emailJsService');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
-dns.setDefaultResultOrder('ipv4first');
 
 const resetOtps = new Map();
 const OTP_TTL = 10 * 60 * 1000;
@@ -45,52 +43,24 @@ async function findUserByEmail(email) {
 }
 
 async function sendOtp(email, otp) {
-  const host = process.env.SMTP_HOST?.trim();
-  const port = process.env.SMTP_PORT?.trim();
-  const user = process.env.SMTP_USER?.trim();
-  const pass = process.env.SMTP_PASS?.trim();
-  const portNumber = Number(port);
+  const templateId = process.env.EMAILJS_OTP_TEMPLATE_ID?.trim();
 
-  if (!host || !port || !user || !pass) {
+  if (!process.env.EMAILJS_SERVICE_ID || !process.env.EMAILJS_PUBLIC_KEY || !templateId) {
     console.log(`Password reset OTP for ${email}: ${otp}`);
     return;
   }
-  const transporter = nodemailer.createTransport({
-    host,
-    port: portNumber,
-    secure: portNumber === 465,
-    auth: { user, pass },
-    family: 4,
-    connectionTimeout: 60000,
-    greetingTimeout: 60000,
-    socketTimeout: 60000,
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
 
   try {
-    await transporter.verify();
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM?.trim() || user,
-      to: email,
+    await sendEmailJsTemplate(templateId, {
+      to_email: email,
+      email,
+      otp,
+      passcode: otp,
       subject: 'Flipkart password reset OTP',
-      text: `Your password reset OTP is ${otp}. It is valid for 10 minutes.`,
-      html: `
-        <div style="font-family:Arial,sans-serif;background:#f1f3f6;padding:24px;color:#111827">
-          <div style="max-width:520px;margin:auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;padding:24px">
-            <h2 style="margin:0 0 12px;color:#2874f0">Flipkart password reset</h2>
-            <p style="margin:0 0 16px;font-size:15px;color:#374151">Use this OTP to reset your password.</p>
-            <div style="font-size:32px;letter-spacing:8px;font-weight:700;background:#fff4cc;border:1px dashed #f59e0b;border-radius:8px;padding:16px;text-align:center;color:#111827">
-              ${otp}
-            </div>
-            <p style="margin:16px 0 0;font-size:13px;color:#6b7280">This OTP is valid for 10 minutes. Do not share it with anyone.</p>
-          </div>
-        </div>
-      `
+      message: `Your password reset OTP is ${otp}. It is valid for 10 minutes.`
     });
   } catch (err) {
-    err.message = `SMTP ${host}:${portNumber} failed - ${err.message}`;
+    err.message = `EmailJS OTP failed - ${err.message}`;
     throw err;
   }
 }

@@ -137,7 +137,6 @@ Password: Demo@123
 
 ## ⚙️ Backend
 - Node.js
-- Express.js
 
 ## 🗄️ Database
 - MySQL
@@ -149,8 +148,9 @@ Password: Demo@123
 - Razorpay
 
 ## ☁️ Deployment
-- Vercel
-
+- Vercel - Frontend
+- Render - Backend
+- FreeSQLDatabase - MySQL
 ---
 
 # 📁 Project Structure
@@ -212,7 +212,6 @@ Features:
 ---
 
 # ⚡ Setup Instructions
-
 ## 1️⃣ Clone Repository
 
 ```bash

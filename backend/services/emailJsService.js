@@ -24,6 +24,29 @@ async function sendEmailJsTemplate(templateId, templateParams) {
     return { sent: false, fallback: true, provider: 'emailjs', reason: 'EmailJS not configured' };
   }
 
+  const recipientEmail = String(
+    templateParams.to_email ||
+    templateParams.user_email ||
+    templateParams.recipient_email ||
+    templateParams.to ||
+    templateParams.email ||
+    ''
+  ).trim();
+
+  if (!recipientEmail) {
+    throw new Error('EmailJS recipient email is missing');
+  }
+
+  const normalizedParams = {
+    ...templateParams,
+    to: recipientEmail,
+    to_email: recipientEmail,
+    toEmail: recipientEmail,
+    user_email: recipientEmail,
+    recipient_email: recipientEmail,
+    reply_to: recipientEmail
+  };
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
 
@@ -33,7 +56,7 @@ async function sendEmailJsTemplate(templateId, templateParams) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...config,
-        template_params: templateParams
+        template_params: normalizedParams
       }),
       signal: controller.signal
     });

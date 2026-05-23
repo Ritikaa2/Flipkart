@@ -8,7 +8,7 @@ import { Check, ShieldCheck, CreditCard, Lock, QrCode, RefreshCw, Smartphone, Tr
 
 const Checkout = () => {
   const { user } = useAuth();
-  const { cartItems, totalItems, totalMrp, totalDiscount, finalAmount, clearCart, removeFromCart } = useCart();
+  const { cartItems, totalItems, totalMrp, totalDiscount, finalAmount, clearCart, removeFromCart, updateCartQuantity } = useCart();
   const navigate = useNavigate();
 
   // Redirect if cart is empty
@@ -74,6 +74,17 @@ const Checkout = () => {
 
   const handleRemoveSummaryItem = async (itemId) => {
     await removeFromCart(itemId);
+  };
+
+  const handleSummaryQtyChange = async (item, quantity) => {
+    const nextQty = Number(quantity);
+    if (!Number.isInteger(nextQty) || nextQty < 1) return;
+
+    setPaymentError('');
+    const result = await updateCartQuantity(item.id, nextQty);
+    if (!result.success) {
+      setPaymentError(result.error || 'Could not update item quantity. Please try again.');
+    }
   };
 
   const handlePlaceOrder = async (e) => {
@@ -508,8 +519,14 @@ const Checkout = () => {
                             {/* <label><input type="checkbox" /> Use GST Invoice</label> */}
                           </div>
                           <div className="summary-product-actions">
-                            <select defaultValue={item.quantity}>
-                              {[1, 2, 3, 4, 5].map((qty) => <option key={qty} value={qty}>Qty: {qty}</option>)}
+                            <select
+                              value={item.quantity}
+                              onChange={(event) => handleSummaryQtyChange(item, event.target.value)}
+                            >
+                              {Array.from(
+                                { length: Math.min(Math.max(Number(item.stock || 5), 1), 10) },
+                                (_, index) => index + 1
+                              ).map((qty) => <option key={qty} value={qty}>Qty: {qty}</option>)}
                             </select>
                             <button
                               type="button"
@@ -537,29 +554,6 @@ const Checkout = () => {
                     <button onClick={() => setActiveStep(4)}>Continue</button>
                   </div>
                 </div>
-                <div className="divide-y divide-gray-100 border border-gray-100 rounded bg-white">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="p-4 flex items-center justify-between gap-4 text-[13.5px] font-medium text-gray-800">
-                      <div className="flex-1 truncate pr-4">
-                        <span className="font-semibold text-gray-800">{item.name}</span>
-                        <span className="text-[11.5px] text-flipkart-textGray mt-0.5 block">Quantity: {item.quantity}</span>
-                      </div>
-                      <span className="font-bold text-flipkart-dark shrink-0">Rs. {(parseFloat(item.price) * item.quantity).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-[3px] mt-2">
-                  <span className="text-[14px] font-bold text-gray-700">Subtotal for ({totalItems} items):</span>
-                  <span className="text-[17px] font-extrabold text-flipkart-blue">Rs. {finalAmount.toLocaleString()}</span>
-                </div>
-
-                <button
-                  onClick={() => setActiveStep(4)}
-                  className="bg-flipkart-orange hover:bg-orange-600 text-white font-bold px-8 py-3.5 rounded-[2px] self-start transition text-[13px] tracking-wide uppercase select-none shadow-sm"
-                >
-                  Continue To Payment
-                </button>
               </div>
             )}
           </div>

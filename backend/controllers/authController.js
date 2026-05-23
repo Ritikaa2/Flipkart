@@ -52,8 +52,12 @@ async function sendOtp(email, otp) {
 
   try {
     await sendEmailJsTemplate(templateId, {
+      to: email,
       to_email: email,
+      user_email: email,
+      recipient_email: email,
       email,
+      to_name: email.split('@')[0],
       otp,
       passcode: otp,
       subject: 'Flipkart password reset OTP',

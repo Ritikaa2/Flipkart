@@ -197,8 +197,12 @@ async function sendOrderEmail(order, items) {
 
   try {
     await sendEmailJsTemplate(templateId, {
+      to,
       to_email: to,
+      user_email: to,
+      recipient_email: to,
       email: to,
+      to_name: order.shipping_name,
       customer_name: order.shipping_name,
       order_number: orderLabel(order),
       order_id: orderLabel(order),

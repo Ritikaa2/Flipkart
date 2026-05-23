@@ -23,11 +23,9 @@ The application is fully responsive and works smoothly across desktop, tablet, a
 - Category-based filtering
 - Responsive product cards
 
-📸 **Add Homepage Screenshot Here**  
-Example:
-```md
-![Home Page](./screenshots/homepage.png)
-```
+### 📸 Homepage Screenshot
+
+![Home Page](./screenshots/Home.png)
 
 ---
 
@@ -38,11 +36,6 @@ Example:
 - Add to Cart
 - Buy Now functionality
 
-📸 **Add Product Details Screenshot Here**
-```md
-![Product Page](./screenshots/product-page.png)
-```
-
 ---
 
 ## 🛒 Shopping Cart
@@ -51,10 +44,9 @@ Example:
 - Dynamic subtotal & total price
 - Persistent cart functionality
 
-📸 **Add Cart Screenshot Here**
-```md
+### 📸 Cart Screenshot
+
 ![Cart Page](./screenshots/Cart.png)
-```
 
 ---
 
@@ -64,15 +56,9 @@ Example:
 - Razorpay payment integration
 - Secure order placement
 
-📸 **Add Checkout Screenshot Here**
-```md
-![Checkout Page](./screenshots/checkout-page.png)
-```
+### 📸 Razorpay Payment Screenshot
 
-📸 **Add Razorpay Payment Screenshot Here**
-```md
-![Razorpay Payment](./screenshots/razorpay-payment.png)
-```
+![Razorpay Payment](./screenshots/RazorpayPayment.png)
 
 ---
 
@@ -80,10 +66,15 @@ Example:
 - Order confirmation page
 - Unique order ID generation
 
-📸 **Add Order Success Screenshot Here**
-```md
-![Order Success](./screenshots/order-success.png)
-```
+### 📸 Order Success Screenshot
+
+![Order Success](./screenshots/OrderSuccess.png)
+
+---
+
+## 📧 Order Success Mail
+
+![Order Success Mail](./screenshots/OrderSuccessMail.png)
 
 ---
 
@@ -95,11 +86,36 @@ This project includes complete authentication functionality:
 - User Login
 - JWT Authentication
 - Protected Routes
+- Forgot Password
+- OTP Verification
 
-📸 **Add Login Page Screenshot Here**
-```md
-![Login Page](./screenshots/login-page.png)
-```
+### 📸 Forgot Password Screenshot
+
+![Forgot Password](./screenshots/ForgotPass.png)
+
+---
+
+### 📸 Forgot Password OTP Screenshot
+
+![Forgot Password OTP](./screenshots/ForgotPassOTP.png)
+
+---
+
+### 📸 Mail OTP Screenshot
+
+![Mail OTP](./screenshots/MailOTP.png)
+
+---
+
+# ❤️ Wishlist Functionality
+
+- Add products to wishlist
+- Remove products from wishlist
+- Persistent wishlist storage
+
+### 📸 Wishlist Screenshot
+
+![Wishlist](./screenshots/Wishlist.png)
 
 ---
 
@@ -115,7 +131,6 @@ Password: Demo@123
 # 🛠️ Tech Stack
 
 ## 🎨 Frontend
-- Next.js
 - React.js
 - Tailwind CSS
 - Axios
@@ -177,10 +192,9 @@ Main tables used:
 
 Relationships are handled using foreign keys.
 
-📸 **Add Database Schema Screenshot Here**
-```md
-![Database Schema](./screenshots/database-schema.png)
-```
+### 📸 Database Schema Screenshot
+
+![Database Schema](./screenshots/Database.png)
 
 ---
 
@@ -281,6 +295,9 @@ RAZORPAY_FORCE_DEMO_QR=false
 ✅ Checkout Flow  
 ✅ Razorpay Integration  
 ✅ JWT Authentication  
+✅ Forgot Password  
+✅ OTP Verification  
+✅ Wishlist Functionality  
 ✅ Responsive Design  
 ✅ Order Placement  
 
@@ -292,11 +309,6 @@ The application is optimized for:
 - Desktop
 - Tablet
 - Mobile Devices
-
-📸 **Add Mobile Responsive Screenshot Here**
-```md
-![Responsive Design](./screenshots/mobile-view.png)
-```
 
 ---
 
@@ -312,7 +324,6 @@ The application is optimized for:
 # 🔮 Future Improvements
 
 Some features planned for future:
-- ❤️ Wishlist functionality
 - 📦 Order history
 - ⭐ Product reviews & ratings
 - 🛠️ Admin dashboard
@@ -323,7 +334,7 @@ Some features planned for future:
 
 # 👨‍💻 Developer
 
-Developed by Ritika
+Developed by **Ritika**
 
 ---
 

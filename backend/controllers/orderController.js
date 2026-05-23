@@ -6,6 +6,19 @@ const db = require('../config/db');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const money = (value) => Number(value || 0).toFixed(2);
+const NOTIFICATION_TIMEOUT_MS = 8000;
+
+function withTimeout(promise, fallback, label, ms = NOTIFICATION_TIMEOUT_MS) {
+  let timer;
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(() => {
+      console.log(`${label} timed out after ${ms}ms`);
+      resolve(fallback);
+    }, ms);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
 
 function base64Url(value) {
   return Buffer.from(value)
@@ -43,11 +56,20 @@ async function getFirebaseToken() {
     assertion: makeFirebaseJwt()
   });
 
-  const response = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), NOTIFICATION_TIMEOUT_MS);
+
+  let response;
+  try {
+    response = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timer);
+  }
   const data = await response.json();
 
   if (!response.ok) {
@@ -85,14 +107,23 @@ async function sendFirebaseOrder(order, items, deviceToken) {
   }
 
   const accessToken = await getFirebaseToken();
-  const response = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ message: { token, ...payload } })
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), NOTIFICATION_TIMEOUT_MS);
+
+  let response;
+  try {
+    response = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: { token, ...payload } }),
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timer);
+  }
   const data = await response.json();
 
   if (!response.ok) {
@@ -161,6 +192,9 @@ async function sendOrderEmail(order, items) {
       host,
       port: Number(port),
       secure: Number(port) === 465,
+      connectionTimeout: NOTIFICATION_TIMEOUT_MS,
+      greetingTimeout: NOTIFICATION_TIMEOUT_MS,
+      socketTimeout: NOTIFICATION_TIMEOUT_MS,
       auth: { user, pass }
     });
 
@@ -310,14 +344,19 @@ exports.placeOrder = async (req, res) => {
       email: users[0]?.email || ''
     };
 
-    const email = await sendOrderEmail(order, items);
-    let firebase;
-    try {
-      firebase = await sendFirebaseOrder(order, items, firebase_device_token);
-    } catch (err) {
-      console.log(`Firebase notification failed: ${err.message}`);
-      firebase = { sent: false, fallback: true, provider: 'firebase' };
-    }
+    const emailFallback = { sent: false, to: order.email || 'customer@example.com', fallback: true };
+    const firebaseFallback = { sent: false, fallback: true, provider: 'firebase' };
+    const [email, firebase] = await Promise.all([
+      withTimeout(sendOrderEmail(order, items), emailFallback, 'Order email'),
+      withTimeout(
+        sendFirebaseOrder(order, items, firebase_device_token).catch((err) => {
+          console.log(`Firebase notification failed: ${err.message}`);
+          return firebaseFallback;
+        }),
+        firebaseFallback,
+        'Firebase notification'
+      )
+    ]);
 
     res.status(201).json({
       message: 'Order placed successfully',

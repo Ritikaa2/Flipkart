@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
 
       <Link to={`/product/${id}`}>
         <div className="fk-real-card-image">
-          <img src={image_url || 'https://via.placeholder.com/200'} alt={name} loading="lazy" />
+          <img src={image_url || '/favicon.svg'} alt={name} loading="lazy" />
         </div>
 
         <div className="fk-real-card-copy">

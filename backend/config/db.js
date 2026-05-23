@@ -217,7 +217,7 @@ function executeMockQuery(sql, params = []) {
         price: p ? p.price : 0,
         mrp: p ? p.mrp : 0,
         stock: p ? p.stock : 0,
-        image_url: primaryImg ? primaryImg.image_url : (p ? 'https://via.placeholder.com/150' : '')
+        image_url: primaryImg ? primaryImg.image_url : (p ? '/favicon.svg' : '')
       };
     });
     return [joined];
@@ -280,7 +280,7 @@ function executeMockQuery(sql, params = []) {
         rating: p ? p.rating : 0,
         rating_count: p ? p.rating_count : 0,
         review_count: p ? p.review_count : 0,
-        image_url: primaryImg ? primaryImg.image_url : (p ? 'https://via.placeholder.com/150' : '')
+        image_url: primaryImg ? primaryImg.image_url : (p ? '/favicon.svg' : '')
       };
     });
     return [joined];

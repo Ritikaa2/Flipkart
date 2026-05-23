@@ -171,7 +171,7 @@ const OrderHistory = () => {
                 <small>Seller: SuperCom Net</small>
                 <strong>Rs. {amount.toLocaleString()} <em>1 offer</em></strong>
               </div>
-              <img src={firstItem.image_url || 'https://via.placeholder.com/120'} alt={firstItem.name || 'Order item'} />
+              <img src={firstItem.image_url || '/favicon.svg'} alt={firstItem.name || 'Order item'} />
             </div>
 
             <div className="fk-timeline">
@@ -287,7 +287,7 @@ const OrderHistory = () => {
                 className="fk-order-card"
               >
                 <div className="fk-order-thumb">
-                  <img src={order.firstItem?.image_url || 'https://via.placeholder.com/90'} alt={order.firstItem?.name || 'Order product'} />
+                  <img src={order.firstItem?.image_url || '/favicon.svg'} alt={order.firstItem?.name || 'Order product'} />
                 </div>
                 <div className="fk-order-copy">
                   <h3>{order.firstItem?.name || `Order #${order.id}`}</h3>

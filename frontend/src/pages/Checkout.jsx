@@ -482,7 +482,7 @@ const Checkout = () => {
 
                       return (
                         <article key={item.id}>
-                          <img src={item.image_url || 'https://via.placeholder.com/90'} alt={item.name} />
+                          <img src={item.image_url || '/favicon.svg'} alt={item.name} />
                           <div className="summary-product-copy">
                             <h3>{item.name}</h3>
                             <p>{item.brand || '4 GB RAM'}</p>

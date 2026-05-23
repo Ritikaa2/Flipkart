@@ -179,7 +179,7 @@ const ProductDetail = () => {
             {/* Large primary Display */}
             <div className="product-main-image flex-1 flex justify-center items-center h-full max-w-[70%] select-none">
               <img
-                src={activeImage || 'https://via.placeholder.com/350'}
+                src={activeImage || '/favicon.svg'}
                 alt={name}
                 className="max-h-[95%] max-w-[95%] object-contain select-none"
               />
